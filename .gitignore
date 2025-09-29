@@ -1,0 +1,24 @@
+
+*.iml
+.gradle
+.idea
+.kotlin
+.DS_Store
+build
+*/build
+captures
+.externalNativeBuild
+.cxx
+local.properties
+xcuserdata/
+Pods/
+*.jks
+*.gpg
+*yarn.lock
+/iosApp/iosApp/Assets.xcassets/
+/iosApp/iosApp/Assets.xcassets/AccentColor.colorset/Contents.json
+/iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Contents.json
+/iosApp/iosApp/Assets.xcassets/Contents.json
+/iosApp/iosApp/Preview Content/Preview Assets.xcassets/Contents.json
+/iosApp/iosApp/Info.plist
+/gradle.properties
