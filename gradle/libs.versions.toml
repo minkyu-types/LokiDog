@@ -51,7 +51,6 @@ androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navi
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "androidx-room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
-androidx-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-viewmodel"}
 androidx-paging3-common = { module = "androidx.paging:paging-common", version.ref = "androidx-paging3" }
 androidx-paging3-runtime = { module = "androidx.paging:paging-runtime", version.ref = "androidx-paging3" }
 androidx-paging3-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging3-compose" }
