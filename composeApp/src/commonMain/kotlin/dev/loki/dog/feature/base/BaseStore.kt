@@ -14,7 +14,6 @@ abstract class BaseStore<S: BaseState, SE: BaseSideEffect>(
 ): ContainerHost<S, SE>, KoinScopeComponent {
 
     override val container: Container<S, SE> = coroutineScope.container(initialState)
-    protected val storeScope = coroutineScope
 
     abstract fun dispatch(action: BaseAction)
 
