@@ -6,6 +6,7 @@ import org.koin.core.module.Module
 
 expect fun getAlarmDatabaseModule(): Module
 expect fun getRepositoryModule(): Module
+expect fun getNotificationManager()
 
 fun getAppModules() = listOf(
     viewModelModule,
