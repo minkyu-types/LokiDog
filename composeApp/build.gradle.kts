@@ -36,6 +36,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            implementation(project(":composeApp:alarm-domain"))
+
             api(libs.androidx.lifecycle.viewmodel)
             implementation(compose.runtime)
             implementation(compose.ui)

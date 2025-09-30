@@ -5,11 +5,9 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import dev.loki.alarm_data.dao.AlarmDao
 import dev.loki.alarm_data.dao.AlarmGroupDao
-import dev.loki.alarm_data.dao.TempAlarmGroupDao
 import dev.loki.alarm_data.expect.AlarmDatabaseConstructor
 import dev.loki.alarm_data.model.AlarmEntity
 import dev.loki.alarm_data.model.AlarmGroupEntity
-import dev.loki.alarm_data.model.TempAlarmGroupEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -18,7 +16,6 @@ import kotlinx.coroutines.IO
         [
             AlarmEntity::class,
             AlarmGroupEntity::class,
-            TempAlarmGroupEntity::class
         ],
     version = 1
 )
@@ -26,7 +23,6 @@ import kotlinx.coroutines.IO
 abstract class AlarmDatabase: RoomDatabase() {
     abstract fun getAlarmDao(): AlarmDao
     abstract fun getAlarmGroupDao(): AlarmGroupDao
-    abstract fun getTempAlarmGroupDao(): TempAlarmGroupDao
 }
 
 fun getAlarmDatabase(

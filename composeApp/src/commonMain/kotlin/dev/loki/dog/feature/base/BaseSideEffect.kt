@@ -1,3 +1,5 @@
 package dev.loki.dog.feature.base
 
-internal interface BaseSideEffect
+interface BaseSideEffect {
+    data class ShowAlert(val message: String): BaseSideEffect
+}

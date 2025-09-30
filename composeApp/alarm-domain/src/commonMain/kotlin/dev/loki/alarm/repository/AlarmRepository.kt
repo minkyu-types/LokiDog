@@ -1,4 +1,4 @@
-package dev.loki.alarm
+package dev.loki.alarm.repository
 
 import dev.loki.alarm.model.Alarm
 

@@ -1,4 +1,4 @@
-package dev.loki.dog.feature.alarmgroup
+package dev.loki.dog.model
 
 data class AlarmGroupModel(
     val id: Long,
