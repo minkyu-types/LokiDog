@@ -20,3 +20,5 @@ actual fun getAlarmDatabaseModule(): Module {
 }
 
 actual fun getRepositoryModule(): Module = alarmRepositoryModule
+actual fun getNotificationManager() {
+}
