@@ -7,6 +7,6 @@ import dev.loki.alarmgroup.repository.AlarmGroupRepository
 import org.koin.dsl.module
 
 val alarmRepositoryModule = module {
-    single<AlarmGroupRepository> { AlarmGroupRepositoryImpl(get(), get()) }
+    single<AlarmGroupRepository> { AlarmGroupRepositoryImpl(get(), get(), get()) }
     single<AlarmRepository> { AlarmRepositoryImpl(get(), get()) }
 }
