@@ -1,4 +1,4 @@
-package dev.loki.alarmgroup.usecase.saved
+package dev.loki.alarmgroup.usecase
 
 import dev.loki.alarmgroup.repository.AlarmGroupRepository
 import dev.loki.alarmgroup.model.AlarmGroup
