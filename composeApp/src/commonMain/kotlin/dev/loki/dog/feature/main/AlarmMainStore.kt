@@ -5,17 +5,18 @@ import dev.loki.alarmgroup.usecase.DeleteAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.DeleteSelectedAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
-import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.feature.base.BaseAction
 import dev.loki.dog.feature.base.BaseStore
+import dev.loki.dog.model.AlarmGroupModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 
 class AlarmMainStore(
     coroutineScope: CoroutineScope,
     scope: Scope
-): BaseStore<AlarmMainState, AlarmMainSideEffect>(
+) : BaseStore<AlarmMainState, AlarmMainSideEffect>(
     coroutineScope = coroutineScope,
     scope = scope,
     initialState = AlarmMainState()
@@ -29,16 +30,27 @@ class AlarmMainStore(
     override fun dispatch(action: BaseAction) {
         when (action) {
             is AlarmMainAction.Add -> {
-                addAlarmGroup(action.alarmGroup)
+                viewModelScope.launch {
+                    addAlarmGroup(action.alarmGroup)
+                }
             }
+
             is AlarmMainAction.Update -> {
-                updateAlarmGroup(action.alarmGroup)
+                viewModelScope.launch {
+                    updateAlarmGroup(action.alarmGroup)
+                }
             }
+
             is AlarmMainAction.Delete -> {
-                deleteAlarmGroup(action.alarmGroup)
+                viewModelScope.launch {
+                    deleteAlarmGroup(action.alarmGroup)
+                }
             }
+
             is AlarmMainAction.DeleteSelected -> {
-                deleteSelectedAlarmGroups(action.alarmGroups)
+                viewModelScope.launch {
+                    deleteSelectedAlarmGroups(action.alarmGroups)
+                }
             }
         }
     }
