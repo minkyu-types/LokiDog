@@ -1,10 +1,11 @@
 package dev.loki.dog.feature.main
 
 import dev.loki.alarm.usecase.AddAlarmUseCase
-import dev.loki.alarmgroup.usecase.saved.DeleteAlarmGroupUseCase
-import dev.loki.alarmgroup.usecase.saved.DeleteSelectedAlarmGroupsUseCase
-import dev.loki.alarmgroup.usecase.saved.UpdateAlarmGroupUseCase
-import dev.loki.dog.feature.alarmgroup.AlarmGroupModel
+import dev.loki.alarmgroup.usecase.DeleteAlarmGroupUseCase
+import dev.loki.alarmgroup.usecase.DeleteSelectedAlarmGroupsUseCase
+import dev.loki.alarmgroup.usecase.GetAlarmGroupsUseCase
+import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
+import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.feature.base.BaseAction
 import dev.loki.dog.feature.base.BaseStore
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,7 @@ class AlarmMainStore(
     scope = scope,
     initialState = AlarmMainState()
 ) {
+    private val getAlarmGroupsUseCase: GetAlarmGroupsUseCase by inject()
     private val addAlarmUseCase: AddAlarmUseCase by inject()
     private val updateAlarmGroupUseCase: UpdateAlarmGroupUseCase by inject()
     private val deleteAlarmGroupUseCase: DeleteAlarmGroupUseCase by inject()

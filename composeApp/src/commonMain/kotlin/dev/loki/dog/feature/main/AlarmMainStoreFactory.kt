@@ -1,9 +1,9 @@
 package dev.loki.dog.feature.main
 
-import dev.loki.dog.feature.alarm.AlarmMapper
-import dev.loki.dog.feature.alarmgroup.AlarmGroupMapper
 import dev.loki.dog.feature.base.BaseStore
 import dev.loki.dog.feature.base.BaseStoreFactory
+import dev.loki.dog.mapper.AlarmGroupMapper
+import dev.loki.dog.mapper.AlarmMapper
 import kotlinx.coroutines.CoroutineScope
 import org.koin.core.scope.Scope
 
