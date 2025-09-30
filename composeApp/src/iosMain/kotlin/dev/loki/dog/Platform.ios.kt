@@ -1,6 +1,7 @@
 package dev.loki.dog
 
 import dev.loki.alarm_data.database.getAlarmDatabase
+import dev.loki.alarm_data.di.alarmRepositoryModule
 import dev.loki.alarm_data.expect.getAlarmDatabaseBuilder
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -14,3 +15,5 @@ actual fun getAlarmDatabaseModule(): Module {
         }
     }
 }
+
+actual fun getRepositoryModule(): Module = alarmRepositoryModule

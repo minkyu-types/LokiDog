@@ -18,8 +18,11 @@ interface AlarmGroupDao {
     @Query("SELECT * FROM alarm_group ORDER BY updatedAt DESC")
     fun getAlarmGroupsByUpdated(sort: AlarmMainSort): Flow<List<AlarmGroupEntity>>
 
-    @Query("SELECT * FROM alarm_group ORDER BY isActivated DESC")
+    @Query("SELECT * FROM alarm_group ORDER BY isActivated DESC, created DESC")
     fun getAlarmGroupsByActivated(sort: AlarmMainSort): Flow<List<AlarmGroupEntity>>
+
+    @Query("SELECT * FROM alarm_group WHERE (:isTemp) ORDER BY updated DESC")
+    fun getTempAlarmGroups(): Flow<List<AlarmGroupEntity>>
 
     @Insert
     suspend fun insert(item: AlarmGroupEntity)
@@ -31,5 +34,5 @@ interface AlarmGroupDao {
     suspend fun delete(item: AlarmGroupEntity)
 
     @Query("DELETE FROM alarm_group WHERE id IN (:items)")
-    suspend fun deleteSelectedItems(items: List<AlarmGroupEntity>)
+    suspend fun deleteSelectedAlarmGroups(items: List<AlarmGroupEntity>)
 }
