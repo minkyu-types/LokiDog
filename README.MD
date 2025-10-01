@@ -1,24 +1,30 @@
 # Compose Multiplatform Application
 
-## Before running!
- - check your system with [KDoctor](https://github.com/Kotlin/kdoctor)  
- - install JDK 17 or higher on your machine  
- - add `local.properties` file to the project root and set a path to Android SDK there  
+## 공통
+- 공통 UI 개발을 위한 CMP 사용
+- 안드로이드/iOS 각각의 네이티브 기능 연동 및 활용을 위해 Notification 활용이 가능한 알람/타이머 앱
+- 1차적으로 로컬 DB를 활용할 계획이며, 추후에 Firebase를 활용한 기능을 추가할 예정
+- 공통 코드이니만큼, 유지보수성 증가의 효율이 높다고 판단되어 보일러플레이트 코드 감소와 유지보수성 증가를 최우선으로 고려한 코드를 작성하는 것이 목표
+- 
 
-### Android
-To run the application on android device/emulator:  
- - open project in Android Studio and run imported android run configuration  
+## 아키텍처
+- composeApp(androidApp) / iosApp으로 구성되어 있습니다.
+- 멀티 모듈 클린 아키텍처 + MVI(Orbit 프레임워크) 구조로 설계하였습니다.
 
-To build the application bundle:  
- - run `./gradlew :composeApp:assembleDebug`  
- - find `.apk` file in `composeApp/build/outputs/apk/debug/composeApp-debug.apk`  
+## 사용 기술
+- Compose MultiPlatform
+- Kotlin `2.2.0`
+- Clean Architecture + MVI 패턴(Orbit 프레임워크 `10.0.0`)
+- Jetpack Compose, Workmanager, Room, Lifecycle
+- Koin `3.6.4` + Ksp `2.2.0-2.0.2`
+- Coroutines `1.10.3`
+- Kotlinx serialization, datetime
+- Kermit `2.0.4`
+- Ai assistant(Chat GPT 5 + Copilot)
 
-Run android UI tests on the connected device: `./gradlew :composeApp:connectedDebugAndroidTest`
-
-### iOS
-To run the application on iPhone device/simulator:  
- - Open `iosApp/iosApp.xcproject` in Xcode and run standard configuration  
- - Or use [Kotlin Multiplatform Mobile plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile) for Android Studio  
-
-Run iOS simulator UI tests: `./gradlew :composeApp:iosSimulatorArm64Test`  
-
+## 주요 기능
+- 알람 관리
+ - 알람 그룹 목록 조회
+ - 알람 그룹 생성/임시저장
+ - 알람 그룹 수정/삭제
+- 타이머
