@@ -196,7 +196,7 @@ private fun MainFabMenu(
         Column(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(12.dp)
         ) {
             AnimatedVisibility(visible = expanded) {
                 FloatingActionButton(
