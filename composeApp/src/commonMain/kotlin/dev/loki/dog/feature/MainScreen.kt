@@ -2,15 +2,20 @@ package dev.loki.dog.feature
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.Menu
@@ -30,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -192,6 +198,41 @@ private fun MainFabMenu(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.padding(16.dp)
         ) {
+            AnimatedVisibility(visible = expanded) {
+                FloatingActionButton(
+                    onClick = {
+                        // 임시보관함으로 이동
+                        expanded = false
+                    },
+                    containerColor = PrimaryLight
+                ) {
+                    Box(
+                        contentAlignment = Alignment.TopEnd
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Dataset,
+                            contentDescription = "Selection mode on",
+                            tint = Color.White
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .offset(x = 8.dp, y = (-6).dp)
+                                .size(20.dp)
+                                .background(Color.Red, shape = CircleShape)
+                                .border(1.dp, Color.White, CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "4",
+                                color = Color.White,
+                                fontSize = 12.sp,
+                            )
+                        }
+                    }
+                }
+            }
+
             AnimatedVisibility(visible = expanded) {
                 FloatingActionButton(
                     onClick = {
