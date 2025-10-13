@@ -14,9 +14,9 @@ class AlarmRepositoryImpl(
         alarmDao.insert(data)
     }
 
-    override suspend fun updateAlarm(alarm: Alarm) {
+    override suspend fun upsertAlarm(alarm: Alarm) {
         val data = alarmMapper.mapToData(alarm)
-        alarmDao.update(data)
+        alarmDao.upsert(data)
     }
 
     override suspend fun deleteAlarm(alarm: Alarm) {
