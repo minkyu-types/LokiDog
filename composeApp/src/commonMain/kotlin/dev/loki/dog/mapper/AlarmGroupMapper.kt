@@ -21,6 +21,7 @@ class AlarmGroupMapper {
         return AlarmGroupModel(
             id = alarmGroup.id,
             title = alarmGroup.title,
+            repeatDays = emptySet(),
             description = alarmGroup.description,
             created = alarmGroup.created,
             updated = alarmGroup.updated,

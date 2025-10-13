@@ -11,6 +11,7 @@ class AlarmMapper {
             groupId = alarm.groupId,
             time = alarm.time,
             isActivated = alarm.isActivated,
+            isTemp = alarm.isTemp
         )
     }
 
@@ -20,6 +21,7 @@ class AlarmMapper {
             groupId = alarm.groupId,
             time = alarm.time,
             isActivated = alarm.isActivated,
+            isTemp = alarm.isTemp
         )
     }
 }

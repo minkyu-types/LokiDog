@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 
 internal val Seed = Color(0xFF1D3557)
 
+internal val ConstraintLight = Color(0xFF1ffba08)
 internal val PrimaryLight = Color(0xFF485F84)
 internal val OnPrimaryLight = Color(0xFFFFFFFF)
 internal val PrimaryContainerLight = Color(0xFFD5E3FF)

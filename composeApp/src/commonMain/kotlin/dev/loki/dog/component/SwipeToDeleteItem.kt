@@ -3,11 +3,13 @@ package dev.loki.dog.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -19,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -54,12 +57,13 @@ fun <T> SwipeToDeleteItem(
             if (offsetX < 0) {
                 Box(
                     modifier = Modifier
-                        .clickable {
-                            onDelete(item)
-                        }
                         .fillMaxHeight()
                         .width(actionWidthDp)
                         .align(Alignment.CenterEnd)
+                        .clipToBounds()
+                        .clickable {
+                            onDelete(item)
+                        }
                         .background(Color.Red),
                     contentAlignment = Alignment.Center
                 ) {
@@ -76,7 +80,7 @@ fun <T> SwipeToDeleteItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset { IntOffset(offsetX.roundToInt(), 0) }
-                .background(Color.White)
+                .background(Color.Transparent)
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures(
                         onDragEnd = {
@@ -92,6 +96,7 @@ fun <T> SwipeToDeleteItem(
                         offsetX = newOffset.coerceIn(maxSwipe, 0f)
                     }
                 }
+                .padding(end = 8.dp)
         ) {
             content()
         }

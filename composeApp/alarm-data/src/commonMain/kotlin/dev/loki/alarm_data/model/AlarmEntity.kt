@@ -20,4 +20,5 @@ data class AlarmEntity(
     val groupId: Long?,
     val time: Long,
     val isActivated: Boolean,
+    val isTemp: Boolean,
 )

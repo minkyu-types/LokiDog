@@ -11,12 +11,12 @@ import androidx.compose.material.icons.filled.ArrowCircleRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.loki.dog.component.SelectionModeItem
@@ -33,16 +33,21 @@ fun AlarmMainScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     val selectedItems: MutableSet<AlarmGroupModel> = remember { mutableStateSetOf() }
 
-    if (state.value.alarmGroupList.isEmpty()) {
-        Text(
-            text = "알람을 추가해보세요",
-            fontSize = 20.sp,
-        )
-    } else {
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-        ) {
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        if (state.value.alarmGroupList.isEmpty()) {
+            item {
+                Text(
+                    text = "알람을 추가해보세요",
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+            }
+        } else {
             items(
                 items = state.value.alarmGroupList,
                 key = { it.id }
@@ -71,7 +76,6 @@ fun AlarmMainScreen(
             }
         }
     }
-
 }
 
 @Composable
