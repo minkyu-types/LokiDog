@@ -5,4 +5,5 @@ data class Alarm(
     val groupId: Long?,
     val time: Long,
     val isActivated: Boolean,
+    val isTemp: Boolean,
 )

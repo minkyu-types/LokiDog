@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 @Entity(
+    tableName = "alarm",
     foreignKeys = [
         ForeignKey(
             entity = AlarmGroupEntity::class,
@@ -19,4 +20,5 @@ data class AlarmEntity(
     val groupId: Long?,
     val time: Long,
     val isActivated: Boolean,
+    val isTemp: Boolean,
 )

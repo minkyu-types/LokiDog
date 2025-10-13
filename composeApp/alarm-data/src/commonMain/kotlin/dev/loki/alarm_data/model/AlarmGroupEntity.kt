@@ -3,14 +3,13 @@ package dev.loki.alarm_data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "alarm_group")
 data class AlarmGroupEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 1,
     val title: String,
-    val alarms: List<AlarmEntity> = emptyList(),
     val description: String,
-    val created: Long,
-    val updated: Long,
+    val createdAt: Long,
+    val updatedAt: Long,
     val isActivated: Boolean,
     val isTemp : Boolean,
 )

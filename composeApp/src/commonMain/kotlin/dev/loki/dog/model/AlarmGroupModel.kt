@@ -1,5 +1,38 @@
 package dev.loki.dog.model
 
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
 data class AlarmGroupModel(
     val id: Long,
-)
+    val title: String,
+    val repeatDays: Set<DayOfWeek> = emptySet(),
+    val alarms: List<AlarmModel> = emptyList(),
+    val description: String,
+    val created: Long,
+    val updated: Long,
+    val isActivated: Boolean,
+    val isTemp : Boolean,
+) {
+
+    companion object {
+        @OptIn(ExperimentalTime::class)
+        fun createTemp(): AlarmGroupModel {
+            val todayOfWeek = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek
+            return AlarmGroupModel(
+                id = 0,
+                title = "",
+                repeatDays = setOf(todayOfWeek),
+                alarms = emptyList(),
+                description = "",
+                created = 0,
+                updated = 0,
+                isActivated = true,
+                isTemp = true,
+            )
+        }
+    }
+}
