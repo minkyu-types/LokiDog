@@ -7,7 +7,7 @@ class AddAlarmGroupUseCase(
     private val repository: AlarmGroupRepository
 ) {
 
-    suspend operator fun invoke(alarmGroup: AlarmGroup) {
-        repository.createAlarmGroup(alarmGroup)
+    suspend operator fun invoke(alarmGroup: AlarmGroup): Long {
+        return repository.createAlarmGroup(alarmGroup)
     }
 }
