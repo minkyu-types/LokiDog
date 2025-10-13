@@ -49,32 +49,34 @@ class AddAlarmGroupStore(
     }
 
     private fun saveAlarmGroup(alarmGroup: AlarmGroupModel) {
+        val domainAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup).copy(isTemp = false)
         val domainAlarms = alarmGroup.alarms.map {
             alarmMapper.mapToDomain(it).copy(isTemp = false)
         }
-        val domainAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup).copy(isTemp = false)
 
         viewModelScope.launch {
-            val alarmJobs = domainAlarms.map {
-                async { upsertAlarmUseCase(it) }
+            val groupId = addAlarmGroupUseCase(domainAlarmGroup)
+
+            val alarmsWithGroupId = domainAlarms.map {
+                it.copy(groupId = groupId)
             }
 
-            alarmJobs.awaitAll()
-            addAlarmGroupUseCase(domainAlarmGroup)
+            alarmsWithGroupId.forEach { upsertAlarmUseCase(it) }
         }
     }
 
     private fun saveTempAlarmGroup(alarmGroup: AlarmGroupModel) {
-        val domainAlarms = alarmGroup.alarms.map { alarmMapper.mapToDomain(it).copy(isTemp = true) }
         val domainTempAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup).copy(isTemp = true)
+        val domainAlarms = alarmGroup.alarms.map { alarmMapper.mapToDomain(it).copy(isTemp = true) }
 
         viewModelScope.launch {
+            val groupId = addAlarmGroupUseCase(domainTempAlarmGroup)
+
             val alarmJobs = domainAlarms.map {
-                async { upsertAlarmUseCase(it) }
+                it.copy(groupId = groupId)
             }
 
-            alarmJobs.awaitAll()
-            addAlarmGroupUseCase(domainTempAlarmGroup)
+            alarmJobs.forEach { upsertAlarmUseCase(it) }
         }
     }
 }

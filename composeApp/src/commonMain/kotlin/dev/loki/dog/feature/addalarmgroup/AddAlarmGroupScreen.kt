@@ -44,10 +44,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.loki.dog.component.SelectionModeItem
@@ -61,8 +61,6 @@ import dev.loki.dog.theme.OnTertiaryLight
 import dev.loki.dog.theme.OutlineLight
 import dev.loki.dog.theme.PrimaryContainerLight
 import kotlinx.datetime.DayOfWeek
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 @Composable
 fun AddAlarmGroupScreen(
@@ -73,7 +71,6 @@ fun AddAlarmGroupScreen(
     var isSelectionMode by remember { mutableStateOf(false) }
     val selectedAlarmIds = remember { mutableStateListOf<Long>() }
     var alarmGroup by remember { mutableStateOf(AlarmGroupModel.createTemp()) }
-    val alarms = alarmGroup.alarms
     val focusManager = LocalFocusManager.current
 
     Box(
@@ -101,7 +98,7 @@ fun AddAlarmGroupScreen(
                     },
                     onAddNewAlarm = { newAlarm ->
                         alarmGroup = alarmGroup.copy(
-                            alarms = alarms + newAlarm
+                            alarms = alarmGroup.alarms + newAlarm
                         )
                     },
                     onSaveTempAlarmGroup = { alarmGroup ->
@@ -126,14 +123,15 @@ fun AddAlarmGroupScreen(
                 Text(
                     text = "Alarms ${alarmGroup.alarms.size}",
                     color = OnTertiaryLight,
-                    fontSize = 18.sp,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .padding(start = 32.dp)
                 )
             }
 
             itemsIndexed(
-                items = alarms,
+                items = alarmGroup.alarms,
                 key = { _, alarm -> alarm.id }
             ) { index, alarm ->
                 if (isSelectionMode) {
@@ -175,7 +173,7 @@ fun AddAlarmGroupScreen(
                     )
                 }
 
-                if (index < alarms.lastIndex) {
+                if (index < alarmGroup.alarms.lastIndex) {
                     HorizontalDivider(
                         color = OnPrimaryContainerLight,
                         thickness = 1.dp,
@@ -188,7 +186,7 @@ fun AddAlarmGroupScreen(
 
         Button(
             enabled = (alarmGroup.title.isNotEmpty() && alarmGroup.description.isNotEmpty()
-                    && alarms.isNotEmpty() && alarmGroup.repeatDays.isNotEmpty()),
+                    && alarmGroup.alarms.isNotEmpty() && alarmGroup.repeatDays.isNotEmpty()),
             onClick = {
                 viewModel.saveAlarmGroup(alarmGroup)
                 onSaveOrSaveTemp()
@@ -268,14 +266,12 @@ private fun AddAlarmGroupTopBar(
     }
 }
 
-@OptIn(ExperimentalTime::class)
 @Composable
 private fun EditableAlarmGroupHeader(
     alarmGroup: AlarmGroupModel,
     onItemEdit: (AlarmGroupModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isFocused by remember { mutableStateOf(false) }
     var localRepeatDayOfWeeks by remember { mutableStateOf(alarmGroup.repeatDays ?: emptySet()) }
     var localTitle by remember { mutableStateOf(alarmGroup.title) }
     var localDescription by remember { mutableStateOf(alarmGroup.description) }
@@ -292,7 +288,24 @@ private fun EditableAlarmGroupHeader(
         ) {
             TextField(
                 value = localTitle,
-                onValueChange = { localTitle = it },
+                onValueChange = {
+                    localTitle = it
+
+                    val detectedDay = detectDayOfWeekFromText(it)
+                    val updatedRepeatDays = if (detectedDay != null) {
+                        setOf(detectedDay)
+                    } else {
+                        alarmGroup.repeatDays
+                    }
+                    localRepeatDayOfWeeks = updatedRepeatDays
+
+                    val newData = alarmGroup.copy(
+                        title = localTitle,
+                        repeatDays = updatedRepeatDays,
+                    )
+
+                    onItemEdit(newData)
+                },
                 singleLine = true,
                 textStyle = TextStyle(
                     fontSize = 28.sp
@@ -317,17 +330,6 @@ private fun EditableAlarmGroupHeader(
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .onFocusChanged { focusState ->
-                        isFocused = focusState.isFocused
-                        if (!isFocused) {
-                            val currTime = Clock.System.now().toEpochMilliseconds()
-                            val newData = alarmGroup.copy(
-                                title = localTitle,
-                                updated = currTime
-                            )
-                            onItemEdit(newData)
-                        }
-                    }
                     .padding(end = 8.dp),
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -367,7 +369,13 @@ private fun EditableAlarmGroupHeader(
         Spacer(modifier = Modifier.height(8.dp))
         TextField(
             value = localDescription,
-            onValueChange = { localDescription = it },
+            onValueChange = {
+                localDescription = it
+                val newData = alarmGroup.copy(
+                    description = localDescription,
+                )
+                onItemEdit(newData)
+            },
             textStyle = TextStyle(
                 fontSize = 18.sp
             ),
@@ -392,17 +400,6 @@ private fun EditableAlarmGroupHeader(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 120.dp, max = 120.dp + (18.sp.value * 5).dp)
-                .onFocusChanged { focusState ->
-                    isFocused = focusState.isFocused
-                    if (!isFocused) {
-                        val currTime = Clock.System.now().toEpochMilliseconds()
-                        val newData = alarmGroup.copy(
-                            description = localDescription,
-                            updated = currTime
-                        )
-                        onItemEdit(newData)
-                    }
-                }
                 .padding(horizontal = 8.dp)
                 .verticalScroll(scrollState)
         )
@@ -556,4 +553,19 @@ private fun EditableAlarmItem(
         modifier = Modifier
             .padding(start = 32.dp, end = 24.dp)
     )
+}
+
+private fun detectDayOfWeekFromText(text: String): DayOfWeek? {
+    val lower = text.lowercase()
+
+    return when {
+        "monday" in lower -> DayOfWeek.MONDAY
+        "tuesday" in lower -> DayOfWeek.TUESDAY
+        "wednesday" in lower -> DayOfWeek.WEDNESDAY
+        "thursday" in lower -> DayOfWeek.THURSDAY
+        "friday" in lower -> DayOfWeek.FRIDAY
+        "saturday" in lower -> DayOfWeek.SATURDAY
+        "sunday" in lower -> DayOfWeek.SUNDAY
+        else -> null
+    }
 }
