@@ -1,0 +1,7 @@
+<resources>
+    <string name="sort_title">Sort</string>
+    <string name="sort_most_recent_created">Recently Created</string>
+    <string name="sort_most_recent_updated">Recently Updated</string>
+    <string name="sort_activated_first">Recently Activated</string>
+    <string name="sort_alphabetical">Alphabetical</string>
+</resources>

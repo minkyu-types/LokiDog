@@ -1,6 +1,7 @@
 <resources>
-    <string name="open_github">Open github</string>
-    <string name="run">Run</string>
-    <string name="stop">Stop</string>
-    <string name="theme">Theme</string>
+    <string name="sort_title">정렬</string>
+    <string name="sort_most_recent_created">최신 등록순</string>
+    <string name="sort_most_recent_updated">최신 업데이트순</string>
+    <string name="sort_activated_first">활성화순</string>
+    <string name="sort_alphabetical">알파벳순</string>
 </resources>
