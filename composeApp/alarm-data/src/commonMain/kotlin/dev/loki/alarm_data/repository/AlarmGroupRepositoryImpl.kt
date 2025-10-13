@@ -9,7 +9,10 @@ import dev.loki.alarmgroup.model.AlarmMainSort
 import dev.loki.alarmgroup.repository.AlarmGroupRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class AlarmGroupRepositoryImpl(
     private val alarmGroupDao: AlarmGroupDao,
     private val alarmMapper: AlarmMapper,
@@ -31,6 +34,7 @@ class AlarmGroupRepositoryImpl(
             AlarmMainSort.MOST_RECENT_CREATED -> alarmGroupDao.getAlarmGroupsByCreated()
             AlarmMainSort.MOST_RECENT_UPDATED -> alarmGroupDao.getAlarmGroupsByUpdated()
             AlarmMainSort.ACTIVATED_FIRST -> alarmGroupDao.getAlarmGroupsByActivated()
+            AlarmMainSort.ALPHABETICAL -> alarmGroupDao.getAlarmGroupsByAlphabet()
         }.map { groups ->
             groups.map { group ->
                 alarmGroupMapper.mapToDomain(group)
@@ -38,13 +42,19 @@ class AlarmGroupRepositoryImpl(
         }
     }
 
-    override suspend fun createAlarmGroup(alarmGroup: AlarmGroup) {
-        val data = alarmGroupMapper.mapToData(alarmGroup)
-        alarmGroupDao.insert(data)
+    override suspend fun createAlarmGroup(alarmGroup: AlarmGroup): Long {
+        val currTime = Clock.System.now().toEpochMilliseconds()
+        val data = alarmGroupMapper.mapToData(
+            alarmGroup.copy(created = currTime)
+        )
+        return alarmGroupDao.insert(data)
     }
 
     override suspend fun updateAlarmGroup(alarmGroup: AlarmGroup) {
-        val data = alarmGroupMapper.mapToData(alarmGroup)
+        val currTime = Clock.System.now().toEpochMilliseconds()
+        val data = alarmGroupMapper.mapToData(
+            alarmGroup.copy(updated = currTime)
+        )
         alarmGroupDao.update(data)
     }
 
