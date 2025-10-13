@@ -1,0 +1,80 @@
+package dev.loki.dog.feature.addalarmgroup
+
+import dev.loki.alarm.usecase.AddAlarmUseCase
+import dev.loki.alarm.usecase.DeleteAlarmUseCase
+import dev.loki.alarm.usecase.UpsertAlarmUseCase
+import dev.loki.alarmgroup.usecase.AddAlarmGroupUseCase
+import dev.loki.alarmgroup.usecase.GetAlarmGroupWithAlarmsUseCase
+import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
+import dev.loki.dog.feature.base.BaseAction
+import dev.loki.dog.feature.base.BaseStore
+import dev.loki.dog.mapper.AlarmGroupMapper
+import dev.loki.dog.mapper.AlarmMapper
+import dev.loki.dog.model.AlarmGroupModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import org.koin.core.component.inject
+import org.koin.core.scope.Scope
+
+class AddAlarmGroupStore(
+    private val coroutineScope: CoroutineScope,
+    scope: Scope
+) : BaseStore<AddAlarmGroupState, AddAlarmGroupSideEffect>(
+    coroutineScope = coroutineScope,
+    scope = scope,
+    initialState = AddAlarmGroupState()
+) {
+    private val getAlarmGroupWithAlarmsUseCase: GetAlarmGroupWithAlarmsUseCase by inject()
+    private val addAlarmGroupUseCase: AddAlarmGroupUseCase by inject()
+    private val updateAlarmGroupUseCase: UpdateAlarmGroupUseCase by inject()
+    private val alarmMapper: AlarmMapper by inject()
+    private val alarmGroupMapper: AlarmGroupMapper by inject()
+
+    private val addAlarmUseCase: AddAlarmUseCase by inject()
+    private val upsertAlarmUseCase: UpsertAlarmUseCase by inject()
+    private val deleteAlarmUseCase: DeleteAlarmUseCase by inject()
+
+    override fun dispatch(action: BaseAction) {
+        when (action) {
+            is AddAlarmGroupAction.Save -> {
+                saveAlarmGroup(action.alarmGroup)
+            }
+
+            is AddAlarmGroupAction.SaveTemp -> {
+                saveTempAlarmGroup(action.alarmGroup)
+            }
+        }
+    }
+
+    private fun saveAlarmGroup(alarmGroup: AlarmGroupModel) {
+        val domainAlarms = alarmGroup.alarms.map {
+            alarmMapper.mapToDomain(it).copy(isTemp = false)
+        }
+        val domainAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup).copy(isTemp = false)
+
+        viewModelScope.launch {
+            val alarmJobs = domainAlarms.map {
+                async { upsertAlarmUseCase(it) }
+            }
+
+            alarmJobs.awaitAll()
+            addAlarmGroupUseCase(domainAlarmGroup)
+        }
+    }
+
+    private fun saveTempAlarmGroup(alarmGroup: AlarmGroupModel) {
+        val domainAlarms = alarmGroup.alarms.map { alarmMapper.mapToDomain(it).copy(isTemp = true) }
+        val domainTempAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup).copy(isTemp = true)
+
+        viewModelScope.launch {
+            val alarmJobs = domainAlarms.map {
+                async { upsertAlarmUseCase(it) }
+            }
+
+            alarmJobs.awaitAll()
+            addAlarmGroupUseCase(domainTempAlarmGroup)
+        }
+    }
+}
