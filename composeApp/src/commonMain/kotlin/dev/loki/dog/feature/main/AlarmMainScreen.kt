@@ -1,7 +1,6 @@
 package dev.loki.dog.feature.main
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.sharp.ArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -38,9 +36,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,17 +49,9 @@ import dev.loki.dog.theme.ConstraintLight
 import dev.loki.dog.theme.InverseOnSurfaceLight
 import dev.loki.dog.theme.OnPrimaryContainerLight
 import dev.loki.dog.theme.OnTertiaryLight
-import dev.loki.dog.theme.PrimaryLight
 import dev.loki.dog.theme.Seed
 import dev.loki.dog.theme.SurfaceVariantLight
 import kotlinx.coroutines.launch
-import lokidog.composeapp.generated.resources.Res
-import lokidog.composeapp.generated.resources.sort_activated_first
-import lokidog.composeapp.generated.resources.sort_alphabetical
-import lokidog.composeapp.generated.resources.sort_most_recent_created
-import lokidog.composeapp.generated.resources.sort_most_recent_updated
-import lokidog.composeapp.generated.resources.sort_title
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,16 +61,11 @@ fun AlarmMainScreen(
     onAlarmGroupClick: (AlarmGroupModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val focusManager = LocalFocusManager.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val selectedItems: MutableSet<AlarmGroupModel> = remember { mutableStateSetOf() }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSortBottomSheet by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isSelectionMode) {
-        selectedItems.clear()
-    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -112,12 +94,6 @@ fun AlarmMainScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {
-                focusManager.clearFocus()
-            }
     ) {
         if (state.alarmGroupList.isEmpty()) {
             item {
@@ -141,6 +117,7 @@ fun AlarmMainScreen(
 
                     }
                 )
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             itemsIndexed(
@@ -259,7 +236,7 @@ private fun AlarmGroupItem(
     ) {
         Text(
             text = alarmGroup.title,
-            fontSize = 28.sp,
+            fontSize = 32.sp,
             color = OnTertiaryLight
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -292,37 +269,27 @@ private fun AlarmGroupTopBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {
-                onClick()
-            }
-            .padding(horizontal = 24.dp, vertical = 8.dp)
-            .clipToBounds()
+            .padding(horizontal = 24.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(color = OnPrimaryContainerLight)
-                .border(width = 1.dp, color = OnTertiaryLight, shape = RoundedCornerShape(16.dp))
-                .padding(start = 12.dp, end = 4.dp, top = 2.dp, bottom = 2.dp)
-        ) {
-            Text(
-                text = currentSort.getLabel(),
-                fontSize = 18.sp,
-                color = OnTertiaryLight,
-                modifier = modifier
-                    .padding(vertical = 4.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                tint = OnTertiaryLight
-            )
-        }
+        Text(
+            text = currentSort.label,
+            fontSize = 20.sp,
+            color = OnTertiaryLight,
+            modifier = modifier
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    onClick()
+                }
+                .padding(vertical = 4.dp)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Icon(
+            imageVector = Icons.Default.ArrowDropDown,
+            contentDescription = null,
+            tint = OnTertiaryLight
+        )
         Spacer(modifier = Modifier.weight(1f))
         Icon(
             imageVector = Icons.Default.Settings,
@@ -361,7 +328,7 @@ private fun SortBottomSheet(
         modifier = modifier
     ) {
         Text(
-            text = stringResource(Res.string.sort_title),
+            text = "정렬",
             fontSize = 20.sp,
             color = OnTertiaryLight,
             fontWeight = FontWeight.Bold,
@@ -373,7 +340,7 @@ private fun SortBottomSheet(
         Spacer(modifier = Modifier.height(24.dp))
         AlarmMainSort.entries.forEach { sort ->
             Text(
-                text = sort.getLabel(),
+                text = sort.label,
                 fontSize = 18.sp,
                 color = if (prevSort == sort) ConstraintLight else OnTertiaryLight,
                 fontWeight = if (prevSort == sort) FontWeight.SemiBold else null,
@@ -388,19 +355,9 @@ private fun SortBottomSheet(
                             onDismiss()
                         }
                     }
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
+                    .padding(horizontal = 24.dp, vertical = 4.dp)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-fun AlarmMainSort.getLabel(): String {
-    return when (this) {
-        AlarmMainSort.MOST_RECENT_CREATED -> stringResource(Res.string.sort_most_recent_created)
-        AlarmMainSort.MOST_RECENT_UPDATED -> stringResource(Res.string.sort_most_recent_updated)
-        AlarmMainSort.ACTIVATED_FIRST -> stringResource(Res.string.sort_activated_first)
-        AlarmMainSort.ALPHABETICAL -> stringResource(Res.string.sort_alphabetical)
     }
 }
