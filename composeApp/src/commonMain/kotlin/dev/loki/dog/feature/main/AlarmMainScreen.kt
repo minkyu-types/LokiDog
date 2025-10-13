@@ -36,6 +36,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,6 +54,13 @@ import dev.loki.dog.theme.OnTertiaryLight
 import dev.loki.dog.theme.Seed
 import dev.loki.dog.theme.SurfaceVariantLight
 import kotlinx.coroutines.launch
+import lokidog.composeapp.generated.resources.Res
+import lokidog.composeapp.generated.resources.sort_activated_first
+import lokidog.composeapp.generated.resources.sort_alphabetical
+import lokidog.composeapp.generated.resources.sort_most_recent_created
+import lokidog.composeapp.generated.resources.sort_most_recent_updated
+import lokidog.composeapp.generated.resources.sort_title
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +70,7 @@ fun AlarmMainScreen(
     onAlarmGroupClick: (AlarmGroupModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val selectedItems: MutableSet<AlarmGroupModel> = remember { mutableStateSetOf() }
 
@@ -94,6 +104,12 @@ fun AlarmMainScreen(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                focusManager.clearFocus()
+            }
     ) {
         if (state.alarmGroupList.isEmpty()) {
             item {
@@ -117,7 +133,7 @@ fun AlarmMainScreen(
 
                     }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             itemsIndexed(
@@ -236,7 +252,7 @@ private fun AlarmGroupItem(
     ) {
         Text(
             text = alarmGroup.title,
-            fontSize = 32.sp,
+            fontSize = 28.sp,
             color = OnTertiaryLight
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -269,10 +285,11 @@ private fun AlarmGroupTopBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 24.dp, vertical = 8.dp)
+            .clipToBounds()
     ) {
         Text(
-            text = currentSort.label,
+            text = currentSort.getLabel(),
             fontSize = 20.sp,
             color = OnTertiaryLight,
             modifier = modifier
@@ -328,7 +345,7 @@ private fun SortBottomSheet(
         modifier = modifier
     ) {
         Text(
-            text = "정렬",
+            text = stringResource(Res.string.sort_title),
             fontSize = 20.sp,
             color = OnTertiaryLight,
             fontWeight = FontWeight.Bold,
@@ -340,7 +357,7 @@ private fun SortBottomSheet(
         Spacer(modifier = Modifier.height(24.dp))
         AlarmMainSort.entries.forEach { sort ->
             Text(
-                text = sort.label,
+                text = sort.getLabel(),
                 fontSize = 18.sp,
                 color = if (prevSort == sort) ConstraintLight else OnTertiaryLight,
                 fontWeight = if (prevSort == sort) FontWeight.SemiBold else null,
@@ -359,5 +376,15 @@ private fun SortBottomSheet(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+fun AlarmMainSort.getLabel(): String {
+    return when (this) {
+        AlarmMainSort.MOST_RECENT_CREATED -> stringResource(Res.string.sort_most_recent_created)
+        AlarmMainSort.MOST_RECENT_UPDATED -> stringResource(Res.string.sort_most_recent_updated)
+        AlarmMainSort.ACTIVATED_FIRST -> stringResource(Res.string.sort_activated_first)
+        AlarmMainSort.ALPHABETICAL -> stringResource(Res.string.sort_alphabetical)
     }
 }
