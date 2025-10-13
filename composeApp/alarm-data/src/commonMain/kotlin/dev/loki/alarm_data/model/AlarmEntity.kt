@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
     ]
 )
 data class AlarmEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 1,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val groupId: Long?,
     val time: Long,
     val isActivated: Boolean,
