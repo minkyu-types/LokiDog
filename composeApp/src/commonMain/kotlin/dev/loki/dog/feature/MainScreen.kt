@@ -17,9 +17,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Dataset
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.filled.RadioButtonUnchecked
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -77,7 +80,10 @@ fun MainScreen(
     }
     val mainScreens = listOf(MainScreen.ALARM, MainScreen.TIMER)
     val showBottomBar = (currentScreen in mainScreens)
+
     var isSelectionMode by remember { mutableStateOf(false) }
+    var selectAll by remember { mutableStateOf(false) }
+    var deleteSelected by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier,
@@ -115,11 +121,20 @@ fun MainScreen(
             if (currentScreen == MainScreen.ALARM) {
                 MainFabMenu(
                     isSelectionMode = isSelectionMode,
+                    onTempClick = {
+                        navController.navigate(SubScreen.ALARM_GROUP_TEMP_LIST.name)
+                    },
                     onAddClick = {
                         navController.navigate(SubScreen.ALARM_GROUP_ADD.name)
                     },
+                    onSelectAllClick = {
+                        selectAll = !selectAll
+                    },
                     onActivateSelectionClick = {
                         isSelectionMode = it
+                    },
+                    onDeleteSelectedClick = {
+                        deleteSelected = true
                     }
                 )
             }
@@ -144,7 +159,12 @@ fun MainScreen(
                     val viewModel = getKoin().get<AlarmMainViewModel>()
                     AlarmMainScreen(
                         isSelectionMode = isSelectionMode,
+                        selectAll = selectAll,
+                        deleteSelectedItems = deleteSelected,
                         viewModel = viewModel,
+                        onDeleteComplete = {
+                            deleteSelected = false
+                        },
                         onAlarmGroupClick = { group ->
                             navController.navigate(SubScreen.ALARM_GROUP_DETAIL.name)
                         }
@@ -181,6 +201,7 @@ fun MainScreen(
                     val viewModel = getKoin().get<TempAlarmGroupsViewModel>()
                     TempAlarmGroupsScreen(
                         viewModel = viewModel,
+                        onBack = { navController.popBackStack() },
                         onAlarmGroupClick = {
                             navController.navigate(SubScreen.ALARM_GROUP_DETAIL.name)
                         }
@@ -194,11 +215,15 @@ fun MainScreen(
 @Composable
 private fun MainFabMenu(
     isSelectionMode: Boolean,
+    onTempClick: () -> Unit,
     onAddClick: () -> Unit,
+    onSelectAllClick: () -> Unit,
     onActivateSelectionClick: (Boolean) -> Unit,
+    onDeleteSelectedClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var checkedAll by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -212,7 +237,7 @@ private fun MainFabMenu(
             AnimatedVisibility(visible = expanded) {
                 FloatingActionButton(
                     onClick = {
-                        // 임시보관함으로 이동
+                        onTempClick()
                         expanded = false
                     },
                     containerColor = PrimaryLight
@@ -244,7 +269,7 @@ private fun MainFabMenu(
                 }
             }
 
-            AnimatedVisibility(visible = expanded) {
+            AnimatedVisibility(visible = expanded && !isSelectionMode) {
                 FloatingActionButton(
                     onClick = {
                         onActivateSelectionClick(!isSelectionMode)
@@ -253,7 +278,7 @@ private fun MainFabMenu(
                     containerColor = PrimaryLight
                 ) {
                     Icon(
-                        imageVector = if (isSelectionMode) Icons.Default.EditOff else Icons.Default.Edit,
+                        imageVector = Icons.Default.Edit,
                         contentDescription = "Selection mode on",
                         tint = Color.White
                     )
@@ -276,15 +301,56 @@ private fun MainFabMenu(
                 }
             }
 
-            FloatingActionButton(
-                onClick = { expanded = !expanded },
-                containerColor = PrimaryLight
-            ) {
-                Icon(
-                    imageVector = if (expanded) Icons.Default.Close else Icons.Default.Menu,
-                    contentDescription = "Menu",
-                    tint = Color.White
-                )
+            if (isSelectionMode) {
+                FloatingActionButton(
+                    onClick = {
+                        onDeleteSelectedClick()
+                    },
+                    containerColor = PrimaryLight
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete selected alarm group",
+                        tint = Color.White
+                    )
+                }
+                FloatingActionButton(
+                    onClick = {
+                        onSelectAllClick()
+                        checkedAll = !checkedAll
+                    },
+                    containerColor = PrimaryLight
+                ) {
+                    Icon(
+                        imageVector = if (checkedAll) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
+                        contentDescription = "Check or Uncheck alarm group",
+                        tint = Color.White
+                    )
+                }
+                FloatingActionButton(
+                    onClick = {
+                        onActivateSelectionClick(!isSelectionMode)
+                        expanded = false
+                    },
+                    containerColor = PrimaryLight
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.EditOff,
+                        contentDescription = "Selection mode off",
+                        tint = Color.White
+                    )
+                }
+            } else {
+                FloatingActionButton(
+                    onClick = { expanded = !expanded },
+                    containerColor = PrimaryLight
+                ) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Default.Close else Icons.Default.Menu,
+                        contentDescription = "Menu",
+                        tint = Color.White
+                    )
+                }
             }
         }
     }
