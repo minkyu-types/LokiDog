@@ -35,6 +35,7 @@ class AlarmGroupRepositoryImpl(
             AlarmMainSort.MOST_RECENT_UPDATED -> alarmGroupDao.getAlarmGroupsByUpdated()
             AlarmMainSort.ACTIVATED_FIRST -> alarmGroupDao.getAlarmGroupsByActivated()
             AlarmMainSort.ALPHABETICAL -> alarmGroupDao.getAlarmGroupsByAlphabet()
+            AlarmMainSort.CUSTOM -> alarmGroupDao.getAlarmGroupsByOrder()
         }.map { groups ->
             groups.map { group ->
                 alarmGroupMapper.mapToDomain(group)

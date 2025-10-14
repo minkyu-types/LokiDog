@@ -7,6 +7,7 @@ class AlarmGroupMapper {
 
     fun mapToDomain(alarmGroup: AlarmGroupModel): AlarmGroup {
         return AlarmGroup (
+            order = alarmGroup.order,
             id = alarmGroup.id,
             title = alarmGroup.title,
             description = alarmGroup.description,
@@ -19,6 +20,7 @@ class AlarmGroupMapper {
 
     fun mapToPresentation(alarmGroup: AlarmGroup): AlarmGroupModel {
         return AlarmGroupModel(
+            order = alarmGroup.order,
             id = alarmGroup.id,
             title = alarmGroup.title,
             repeatDays = emptySet(),

@@ -7,6 +7,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 data class AlarmGroupModel(
+    val order: Int,
     val id: Long,
     val title: String,
     val repeatDays: Set<DayOfWeek> = emptySet(),
@@ -23,6 +24,7 @@ data class AlarmGroupModel(
         fun createTemp(): AlarmGroupModel {
             val todayOfWeek = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).dayOfWeek
             return AlarmGroupModel(
+                order = 0,
                 id = 0,
                 title = "",
                 repeatDays = setOf(todayOfWeek),
