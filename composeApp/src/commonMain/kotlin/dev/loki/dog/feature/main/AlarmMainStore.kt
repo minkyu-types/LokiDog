@@ -78,27 +78,18 @@ class AlarmMainStore(
     override fun dispatch(action: BaseAction) {
         when (action) {
             is AlarmMainAction.Add -> {
-                viewModelScope.launch {
-                    addAlarmGroup(action.alarmGroup)
-                }
+                addAlarmGroup(action.alarmGroup)
             }
 
             is AlarmMainAction.Update -> {
-                viewModelScope.launch {
-                    updateAlarmGroup(action.alarmGroup)
-                }
+                updateAlarmGroup(action.alarmGroup)
             }
-
             is AlarmMainAction.Delete -> {
-                viewModelScope.launch {
-                    deleteAlarmGroup(action.alarmGroup)
-                }
+                deleteAlarmGroup(action.alarmGroup)
             }
 
             is AlarmMainAction.DeleteSelected -> {
-                viewModelScope.launch {
-                    deleteSelectedAlarmGroups(action.alarmGroups)
-                }
+                deleteSelectedAlarmGroups(action.alarmGroups)
             }
 
             is AlarmMainAction.SortChange -> {

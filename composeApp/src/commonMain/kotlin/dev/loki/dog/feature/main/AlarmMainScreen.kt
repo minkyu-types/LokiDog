@@ -250,7 +250,6 @@ fun AlarmMainScreen(
                                 draggingItem = null
                                 dragOffsetY = 0f
                             }
-
                         },
                         modifier = Modifier
                             .graphicsLayer {
