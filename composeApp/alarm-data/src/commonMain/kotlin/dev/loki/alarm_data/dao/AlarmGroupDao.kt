@@ -18,6 +18,9 @@ interface AlarmGroupDao {
     @Query("SELECT * FROM alarm_group WHERE isTemp = 0 ORDER BY updatedAt DESC")
     fun getAlarmGroupsByUpdated(): Flow<List<AlarmGroupEntity>>
 
+    @Query("SELECT * FROM alarm_group WHERE isTemp = 0 ORDER BY `order` DESC")
+    fun getAlarmGroupsByOrder(): Flow<List<AlarmGroupEntity>>
+
     @Query("SELECT * FROM alarm_group WHERE isTemp = 0 ORDER BY isActivated DESC, createdAt DESC")
     fun getAlarmGroupsByActivated(): Flow<List<AlarmGroupEntity>>
 

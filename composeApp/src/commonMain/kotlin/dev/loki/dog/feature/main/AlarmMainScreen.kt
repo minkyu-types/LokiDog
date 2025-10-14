@@ -3,7 +3,9 @@ package dev.loki.dog.feature.main
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.sharp.ArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,12 +43,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import co.touchlab.kermit.Logger
 import dev.loki.alarmgroup.model.AlarmMainSort
 import dev.loki.dog.component.SelectionModeItem
 import dev.loki.dog.component.SwipeToDeleteItem
@@ -61,6 +69,7 @@ import kotlinx.coroutines.launch
 import lokidog.composeapp.generated.resources.Res
 import lokidog.composeapp.generated.resources.sort_activated_first
 import lokidog.composeapp.generated.resources.sort_alphabetical
+import lokidog.composeapp.generated.resources.sort_custom
 import lokidog.composeapp.generated.resources.sort_most_recent_created
 import lokidog.composeapp.generated.resources.sort_most_recent_updated
 import lokidog.composeapp.generated.resources.sort_title
@@ -70,19 +79,43 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun AlarmMainScreen(
     isSelectionMode: Boolean,
+    selectAll: Boolean,
+    deleteSelectedItems: Boolean,
     viewModel: AlarmMainViewModel,
+    onDeleteComplete: () -> Unit,
     onAlarmGroupClick: (AlarmGroupModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var alarmGroups by remember { mutableStateOf(emptyList<AlarmGroupModel>()) }
     val selectedItems: MutableSet<AlarmGroupModel> = remember { mutableStateSetOf() }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSortBottomSheet by remember { mutableStateOf(false) }
 
+    LaunchedEffect(deleteSelectedItems) {
+        if (selectedItems.isNotEmpty()) {
+            viewModel.deleteSelectedAlarmGroups(selectedItems.toList())
+            selectedItems.clear()
+            onDeleteComplete()
+        }
+    }
+
     LaunchedEffect(isSelectionMode) {
         selectedItems.clear()
+    }
+
+    LaunchedEffect(state.alarmGroupList) {
+        alarmGroups = state.alarmGroupList
+    }
+
+    LaunchedEffect(selectAll) {
+        if (selectAll) {
+            selectedItems.addAll(state.alarmGroupList)
+        } else {
+            selectedItems.clear()
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -109,28 +142,39 @@ fun AlarmMainScreen(
         )
     }
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {
-                focusManager.clearFocus()
-            }
-    ) {
-        if (state.alarmGroupList.isEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "알람을 추가해보세요",
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-            }
-        } else {
+    var draggingItem by remember { mutableStateOf<AlarmGroupModel?>(null) }
+    var dragOffsetY by remember { mutableStateOf(0f) }
+
+    if (alarmGroups.isEmpty()) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    focusManager.clearFocus()
+                }
+        ) {
+            Text(
+                text = "알람을 추가해보세요",
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                color = OnTertiaryLight
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    focusManager.clearFocus()
+                }
+        ) {
             item {
                 AlarmGroupTopBar(
                     currentSort = state.sort,
@@ -144,11 +188,14 @@ fun AlarmMainScreen(
             }
 
             itemsIndexed(
-                items = state.alarmGroupList,
+                items = alarmGroups,
                 key = { _, alarm -> alarm.id }
             ) { index, item ->
                 if (isSelectionMode) {
+                    val isDragging = (item == draggingItem)
+
                     AlarmGroupSelectionModeItem(
+                        index = index,
                         isChecked = (item in selectedItems),
                         alarmGroup = item,
                         onCheckedChange = { group, isChecked ->
@@ -157,7 +204,61 @@ fun AlarmMainScreen(
                             } else {
                                 selectedItems.remove(group)
                             }
-                        }
+                        },
+                        dragController = object : Draggable {
+                            override fun onDragStart(index: Int) {
+                                draggingItem = item
+                            }
+
+                            override fun onDrag(dragAmount: Float, itemHeight: Float) {
+                                dragOffsetY += dragAmount
+
+                                Logger.d { "AlarmGroupState : $state" }
+                                Logger.d { "AlarmGroup size : ${alarmGroups.size}" }
+
+                                val currentItem = draggingItem ?: return
+                                val currentIndex = alarmGroups.indexOf(currentItem)
+                                val targetIndex = calculateNewIndex(
+                                    currentIndex = currentIndex,
+                                    offsetY = dragOffsetY,
+                                    listSize = alarmGroups.size,
+                                    itemHeight = itemHeight
+                                )
+                                Logger.d { "Current Index : $currentIndex" }
+                                Logger.d { "Target Index : $targetIndex" }
+                                Logger.d { "Last Index : ${alarmGroups.lastIndex}" }
+
+                                if (targetIndex != null && targetIndex != currentIndex) {
+                                    alarmGroups = alarmGroups.toMutableList().apply {
+                                        val from = currentIndex.coerceIn(0, lastIndex)
+                                        val to = targetIndex.coerceIn(0, lastIndex)
+                                        if (from != to) {
+                                            val moved = removeAt(from)
+                                            add(to, moved)
+                                        }
+                                    }
+                                    dragOffsetY = 0f
+                                }
+                            }
+
+                            override fun onDragEnd() {
+                                draggingItem = null
+                                dragOffsetY = 0f
+                            }
+
+                            override fun onDragCancel() {
+                                draggingItem = null
+                                dragOffsetY = 0f
+                            }
+                        },
+                        modifier = Modifier
+                            .graphicsLayer {
+                                translationY = if (isDragging) dragOffsetY else 0f
+                                shadowElevation = if (isDragging) 8.dp.toPx() else 0f
+                            }
+                            .background(
+                                color = if (isDragging) PrimaryLight else Color.Transparent
+                            )
                     )
                 } else {
                     AlarmGroupSwipeToDeleteItem(
@@ -178,8 +279,6 @@ fun AlarmMainScreen(
                     HorizontalDivider(
                         color = OnPrimaryContainerLight,
                         thickness = 1.dp,
-                        modifier = Modifier
-                            .padding(horizontal = 24.dp)
                     )
                 }
             }
@@ -187,13 +286,35 @@ fun AlarmMainScreen(
     }
 }
 
+private fun calculateNewIndex(
+    currentIndex: Int,
+    offsetY: Float,
+    listSize: Int,
+    itemHeight: Float
+): Int? {
+    val movedPositions = (offsetY / itemHeight).toInt()
+    val newIndex = (currentIndex + movedPositions).coerceIn(0, listSize - 1)
+    return if (newIndex != currentIndex) newIndex else null
+}
+
+interface Draggable {
+    fun onDragStart(index: Int)
+    fun onDrag(dragAmount: Float, itemHeight: Float)
+    fun onDragEnd()
+    fun onDragCancel()
+}
+
 @Composable
 private fun AlarmGroupSelectionModeItem(
+    index: Int,
     isChecked: Boolean,
     alarmGroup: AlarmGroupModel,
     onCheckedChange: (AlarmGroupModel, Boolean) -> Unit,
+    dragController: Draggable,
     modifier: Modifier = Modifier
 ) {
+    var itemHeightPx by remember { mutableStateOf(0f) }
+
     SelectionModeItem(
         item = alarmGroup,
         isChecked = isChecked,
@@ -203,9 +324,30 @@ private fun AlarmGroupSelectionModeItem(
         content = {
             AlarmGroupItem(
                 alarmGroup = alarmGroup,
+                isSelectionMode = true
             )
         },
         modifier = modifier
+            .onGloballyPositioned { layoutCoordinates ->
+                itemHeightPx = layoutCoordinates.size.height.toFloat()
+            }
+            .pointerInput(itemHeightPx) {
+                detectDragGesturesAfterLongPress(
+                    onDragStart = {
+                        dragController.onDragStart(index)
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        dragController.onDrag(dragAmount.y, itemHeightPx)
+                    },
+                    onDragEnd = {
+                        dragController.onDragEnd()
+                    },
+                    onDragCancel = {
+                        dragController.onDragCancel()
+                    }
+                )
+            }
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
@@ -230,6 +372,7 @@ private fun AlarmGroupSwipeToDeleteItem(
         content = {
             AlarmGroupItem(
                 alarmGroup = alarmGroup,
+                isSelectionMode = false,
                 onActivationChange = {
                     onActivationChange(it)
                 }
@@ -242,20 +385,21 @@ private fun AlarmGroupSwipeToDeleteItem(
             ) {
                 onAlarmGroupClick(alarmGroup)
             }
-            .padding(horizontal = 16.dp)
+            .padding(start = 24.dp, end = 16.dp)
     )
 }
 
 @Composable
 private fun AlarmGroupItem(
     alarmGroup: AlarmGroupModel,
+    isSelectionMode: Boolean,
     onActivationChange: ((AlarmGroupModel) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .padding(vertical = 20.dp, horizontal = 8.dp)
+            .padding(vertical = 20.dp)
     ) {
         Text(
             text = alarmGroup.title,
@@ -274,11 +418,19 @@ private fun AlarmGroupItem(
             )
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Icon(
-            imageVector = Icons.AutoMirrored.Sharp.ArrowRight,
-            contentDescription = null,
-            tint = OnTertiaryLight
-        )
+        if (isSelectionMode) {
+            Icon(
+                imageVector = Icons.Default.Menu,
+                contentDescription = null,
+                tint = OnTertiaryLight
+            )
+        } else {
+            Icon(
+                imageVector = Icons.AutoMirrored.Sharp.ArrowRight,
+                contentDescription = null,
+                tint = OnTertiaryLight
+            )
+        }
     }
 }
 
@@ -369,7 +521,9 @@ private fun SortBottomSheet(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(12.dp))
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp).background(OnPrimaryContainerLight))
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 24.dp).background(OnPrimaryContainerLight)
+        )
         Spacer(modifier = Modifier.height(24.dp))
         AlarmMainSort.entries.forEach { sort ->
             Text(
@@ -402,5 +556,6 @@ fun AlarmMainSort.getLabel(): String {
         AlarmMainSort.MOST_RECENT_UPDATED -> stringResource(Res.string.sort_most_recent_updated)
         AlarmMainSort.ACTIVATED_FIRST -> stringResource(Res.string.sort_activated_first)
         AlarmMainSort.ALPHABETICAL -> stringResource(Res.string.sort_alphabetical)
+        AlarmMainSort.CUSTOM -> stringResource(Res.string.sort_custom)
     }
 }

@@ -7,6 +7,7 @@ class AlarmGroupMapper {
 
     fun mapToDomain(alarmGroup: AlarmGroupEntity): AlarmGroup {
         return AlarmGroup (
+            order = alarmGroup.order,
             id = alarmGroup.id,
             title = alarmGroup.title,
             description = alarmGroup.description,
@@ -19,6 +20,7 @@ class AlarmGroupMapper {
 
     fun mapToData(alarmGroup: AlarmGroup): AlarmGroupEntity {
         return AlarmGroupEntity(
+            order = alarmGroup.order,
             id = alarmGroup.id,
             title = alarmGroup.title,
             description = alarmGroup.description,

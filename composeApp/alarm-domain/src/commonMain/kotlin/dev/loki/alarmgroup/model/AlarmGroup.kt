@@ -1,8 +1,7 @@
 package dev.loki.alarmgroup.model
 
-import dev.loki.alarm.model.Alarm
-
 data class AlarmGroup(
+    val order: Int,
     val id: Long,
     val title: String,
     val description: String,

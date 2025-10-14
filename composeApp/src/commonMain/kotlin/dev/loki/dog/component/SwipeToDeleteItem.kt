@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -97,9 +98,9 @@ fun <T> SwipeToDeleteItem(
                         offsetX = newOffset.coerceIn(maxSwipe, 0f)
                     }
                 }
-                .padding(end = 8.dp)
         ) {
             content()
+            Spacer(modifier = Modifier.padding(end = 8.dp))
         }
     }
 }
