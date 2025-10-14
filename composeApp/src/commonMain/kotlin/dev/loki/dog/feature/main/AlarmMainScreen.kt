@@ -1,6 +1,7 @@
 package dev.loki.dog.feature.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.sharp.ArrowRight
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -36,6 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +54,7 @@ import dev.loki.dog.theme.ConstraintLight
 import dev.loki.dog.theme.InverseOnSurfaceLight
 import dev.loki.dog.theme.OnPrimaryContainerLight
 import dev.loki.dog.theme.OnTertiaryLight
+import dev.loki.dog.theme.PrimaryLight
 import dev.loki.dog.theme.Seed
 import dev.loki.dog.theme.SurfaceVariantLight
 import kotlinx.coroutines.launch
@@ -76,6 +80,10 @@ fun AlarmMainScreen(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showSortBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isSelectionMode) {
+        selectedItems.clear()
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -133,7 +141,6 @@ fun AlarmMainScreen(
 
                     }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
             itemsIndexed(
@@ -285,28 +292,37 @@ private fun AlarmGroupTopBar(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                onClick()
+            }
             .padding(horizontal = 24.dp, vertical = 8.dp)
             .clipToBounds()
     ) {
-        Text(
-            text = currentSort.getLabel(),
-            fontSize = 20.sp,
-            color = OnTertiaryLight,
-            modifier = modifier
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    onClick()
-                }
-                .padding(vertical = 4.dp)
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Icon(
-            imageVector = Icons.Default.ArrowDropDown,
-            contentDescription = null,
-            tint = OnTertiaryLight
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .background(color = OnPrimaryContainerLight)
+                .border(width = 1.dp, color = OnTertiaryLight, shape = RoundedCornerShape(16.dp))
+                .padding(start = 12.dp, end = 4.dp, top = 2.dp, bottom = 2.dp)
+        ) {
+            Text(
+                text = currentSort.getLabel(),
+                fontSize = 18.sp,
+                color = OnTertiaryLight,
+                modifier = modifier
+                    .padding(vertical = 4.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = null,
+                tint = OnTertiaryLight
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         Icon(
             imageVector = Icons.Default.Settings,
@@ -372,7 +388,7 @@ private fun SortBottomSheet(
                             onDismiss()
                         }
                     }
-                    .padding(horizontal = 24.dp, vertical = 4.dp)
+                    .padding(horizontal = 24.dp, vertical = 8.dp)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
