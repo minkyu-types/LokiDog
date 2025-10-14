@@ -34,15 +34,7 @@ fun TempAlarmGroupsScreen(
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
-            when (effect) {
-                is TempAlarmGroupsSideEffect.ShowUpdateDialog -> {
 
-                }
-
-                is TempAlarmGroupsSideEffect.ShowDeleteDialog -> {
-
-                }
-            }
         }
     }
 
