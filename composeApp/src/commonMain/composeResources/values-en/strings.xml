@@ -6,9 +6,12 @@
     <string name="screen_sub_alarm_group_detail">Alarm Group Detail</string>
     <string name="screen_sub_alarm_group_list_temp">Temp Alarm Group List</string>
 
+    <string name="title_alarm_group_temp">Saved</string>
+
     <string name="sort_title">Sort</string>
     <string name="sort_most_recent_created">Recently Created</string>
     <string name="sort_most_recent_updated">Recently Updated</string>
     <string name="sort_activated_first">Recently Activated</string>
     <string name="sort_alphabetical">Alphabetical</string>
+    <string name="sort_custom">Custom</string>
 </resources>

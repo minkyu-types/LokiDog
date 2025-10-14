@@ -17,7 +17,7 @@ import kotlinx.coroutines.IO
             AlarmEntity::class,
             AlarmGroupEntity::class,
         ],
-    version = 2
+    version = 3
 )
 @ConstructedBy(AlarmDatabaseConstructor::class)
 abstract class AlarmDatabase: RoomDatabase() {
