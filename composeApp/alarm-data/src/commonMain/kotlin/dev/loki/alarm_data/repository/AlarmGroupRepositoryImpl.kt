@@ -45,7 +45,7 @@ class AlarmGroupRepositoryImpl(
     override suspend fun createAlarmGroup(alarmGroup: AlarmGroup): Long {
         val currTime = Clock.System.now().toEpochMilliseconds()
         val data = alarmGroupMapper.mapToData(
-            alarmGroup.copy(created = currTime)
+            alarmGroup.copy(created = currTime, updated = currTime)
         )
         return alarmGroupDao.insert(data)
     }

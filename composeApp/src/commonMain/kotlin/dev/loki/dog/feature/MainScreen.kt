@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Dataset
 import androidx.compose.material.icons.filled.Edit
@@ -51,6 +52,13 @@ import dev.loki.dog.theme.OnPrimaryContainerLight
 import dev.loki.dog.theme.OnTertiaryLight
 import dev.loki.dog.theme.PrimaryLight
 import dev.loki.dog.theme.Seed
+import lokidog.composeapp.generated.resources.Res
+import lokidog.composeapp.generated.resources.bottom_bar_alarm_group_list
+import lokidog.composeapp.generated.resources.bottom_bar_alarm_timer
+import lokidog.composeapp.generated.resources.screen_sub_alarm_group_add
+import lokidog.composeapp.generated.resources.screen_sub_alarm_group_detail
+import lokidog.composeapp.generated.resources.screen_sub_alarm_group_list_temp
+import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
@@ -60,14 +68,14 @@ fun MainScreen(
     val backstackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backstackEntry?.destination?.route
     val currentScreen: Screens = when (currentRoute) {
-        MainScreen.AlarmMain.title -> MainScreen.AlarmMain
-        MainScreen.TimerMain.title -> MainScreen.TimerMain
-        SubScreen.AlarmGroupAdd.title -> SubScreen.AlarmGroupAdd
-        SubScreen.AlarmGroupDetail.title -> SubScreen.AlarmGroupDetail
-        SubScreen.TempAlarmGroupList.title -> SubScreen.TempAlarmGroupList
-        else -> MainScreen.AlarmMain
+        MainScreen.ALARM.name -> MainScreen.ALARM
+        MainScreen.TIMER.name -> MainScreen.TIMER
+        SubScreen.ALARM_GROUP_ADD.name -> SubScreen.ALARM_GROUP_ADD
+        SubScreen.ALARM_GROUP_DETAIL.name -> SubScreen.ALARM_GROUP_DETAIL
+        SubScreen.ALARM_GROUP_TEMP_LIST.name -> SubScreen.ALARM_GROUP_TEMP_LIST
+        else -> MainScreen.ALARM
     }
-    val mainScreens = listOf(MainScreen.AlarmMain, MainScreen.TimerMain)
+    val mainScreens = listOf(MainScreen.ALARM, MainScreen.TIMER)
     val showBottomBar = (currentScreen in mainScreens)
     var isSelectionMode by remember { mutableStateOf(false) }
 
@@ -85,13 +93,16 @@ fun MainScreen(
                             colors = NavigationBarItemDefaults.colors(
                                 indicatorColor = OnTertiaryLight
                             ),
-                            onClick = { navController.navigate(tab.title) },
+                            onClick = { navController.navigate(tab.name) },
                             icon = {
-
+                                Icon(
+                                    imageVector = Icons.Default.Alarm,
+                                    contentDescription = null
+                                )
                             },
                             label = {
                                 Text(
-                                    text = tab.title,
+                                    text = tab.getTitle(),
                                     color = OnTertiaryLight
                                 )
                             }
@@ -101,11 +112,11 @@ fun MainScreen(
             }
         },
         floatingActionButton = {
-            if (currentScreen == MainScreen.AlarmMain) {
+            if (currentScreen == MainScreen.ALARM) {
                 MainFabMenu(
                     isSelectionMode = isSelectionMode,
                     onAddClick = {
-                        navController.navigate(SubScreen.AlarmGroupAdd.title)
+                        navController.navigate(SubScreen.ALARM_GROUP_ADD.name)
                     },
                     onActivateSelectionClick = {
                         isSelectionMode = it
@@ -120,34 +131,34 @@ fun MainScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .clickable {
-                    navController.navigate(SubScreen.TempAlarmGroupList.title)
+                    navController.navigate(SubScreen.ALARM_GROUP_TEMP_LIST.name)
                 }
         ) {
             NavHost(
                 navController = navController,
-                startDestination = MainScreen.AlarmMain.title
+                startDestination = MainScreen.ALARM.name
             ) {
                 composable(
-                    route = MainScreen.AlarmMain.title
+                    route = MainScreen.ALARM.name
                 ) {
                     val viewModel = getKoin().get<AlarmMainViewModel>()
                     AlarmMainScreen(
                         isSelectionMode = isSelectionMode,
                         viewModel = viewModel,
                         onAlarmGroupClick = { group ->
-                            navController.navigate(SubScreen.AlarmGroupDetail.title)
+                            navController.navigate(SubScreen.ALARM_GROUP_DETAIL.name)
                         }
                     )
                 }
 
                 composable(
-                    route = MainScreen.TimerMain.title
+                    route = MainScreen.TIMER.name
                 ) {
 
                 }
 
                 composable(
-                    route = SubScreen.AlarmGroupAdd.title
+                    route = SubScreen.ALARM_GROUP_ADD.name
                 ) {
                     val viewModel = getKoin().get<AddAlarmGroupViewModel>()
                     AddAlarmGroupScreen(
@@ -159,19 +170,19 @@ fun MainScreen(
                 }
 
                 composable(
-                    route = SubScreen.AlarmGroupDetail.title
+                    route = SubScreen.ALARM_GROUP_DETAIL.name
                 ) {
 
                 }
 
                 composable(
-                    route = SubScreen.TempAlarmGroupList.title
+                    route = SubScreen.ALARM_GROUP_TEMP_LIST.name
                 ) {
                     val viewModel = getKoin().get<TempAlarmGroupsViewModel>()
                     TempAlarmGroupsScreen(
                         viewModel = viewModel,
                         onAlarmGroupClick = {
-                            navController.navigate(SubScreen.AlarmGroupDetail.title)
+                            navController.navigate(SubScreen.ALARM_GROUP_DETAIL.name)
                         }
                     )
                 }
@@ -196,7 +207,7 @@ private fun MainFabMenu(
         Column(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(12.dp)
         ) {
             AnimatedVisibility(visible = expanded) {
                 FloatingActionButton(
@@ -276,5 +287,22 @@ private fun MainFabMenu(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun MainScreen.getTitle(): String {
+    return when (this) {
+        MainScreen.ALARM -> stringResource(Res.string.bottom_bar_alarm_group_list)
+        MainScreen.TIMER -> stringResource(Res.string.bottom_bar_alarm_timer)
+    }
+}
+
+@Composable
+fun SubScreen.getTitle(): String {
+    return when (this) {
+        SubScreen.ALARM_GROUP_ADD-> stringResource(Res.string.screen_sub_alarm_group_add)
+        SubScreen.ALARM_GROUP_DETAIL -> stringResource(Res.string.screen_sub_alarm_group_detail)
+        SubScreen.ALARM_GROUP_TEMP_LIST -> stringResource(Res.string.screen_sub_alarm_group_list_temp)
     }
 }

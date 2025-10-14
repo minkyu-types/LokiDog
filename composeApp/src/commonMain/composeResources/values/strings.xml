@@ -1,6 +1,14 @@
 <resources>
-    <string name="open_github">Open github</string>
-    <string name="run">Run</string>
-    <string name="stop">Stop</string>
-    <string name="theme">Theme</string>
+    <string name="bottom_bar_alarm_group_list">알람 그룹</string>
+    <string name="bottom_bar_alarm_timer">타이머</string>
+
+    <string name="screen_sub_alarm_group_add">알람 그룹 추가</string>
+    <string name="screen_sub_alarm_group_detail">알람 그룹 상세</string>
+    <string name="screen_sub_alarm_group_list_temp">임시 저장 알람 그룹 목록</string>
+
+    <string name="sort_title">정렬</string>
+    <string name="sort_most_recent_created">최신 등록순</string>
+    <string name="sort_most_recent_updated">최신 업데이트순</string>
+    <string name="sort_activated_first">활성화순</string>
+    <string name="sort_alphabetical">알파벳순</string>
 </resources>
