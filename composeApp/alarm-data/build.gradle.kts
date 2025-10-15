@@ -35,6 +35,7 @@ kotlin {
                 implementation(libs.koin.annotations)
                 implementation(libs.androidx.room.paging)
                 implementation(libs.androidx.room.runtime)
+                implementation(libs.kotlinx.datetime)
             }
         }
         val commonTest by getting {

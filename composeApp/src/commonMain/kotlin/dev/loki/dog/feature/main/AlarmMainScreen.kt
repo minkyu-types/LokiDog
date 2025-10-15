@@ -53,10 +53,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import co.touchlab.kermit.Logger
 import dev.loki.alarmgroup.model.AlarmMainSort
 import dev.loki.dog.component.SelectionModeItem
 import dev.loki.dog.component.SwipeToDeleteItem
+import dev.loki.dog.handler.DraggableItem
 import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.theme.ConstraintLight
 import dev.loki.dog.theme.InverseOnSurfaceLight
@@ -205,16 +205,13 @@ fun AlarmMainScreen(
                                 selectedItems.remove(group)
                             }
                         },
-                        dragController = object : Draggable {
+                        dragController = object : DraggableItem {
                             override fun onDragStart(index: Int) {
                                 draggingItem = item
                             }
 
                             override fun onDrag(dragAmount: Float, itemHeight: Float) {
                                 dragOffsetY += dragAmount
-
-                                Logger.d { "AlarmGroupState : $state" }
-                                Logger.d { "AlarmGroup size : ${alarmGroups.size}" }
 
                                 val currentItem = draggingItem ?: return
                                 val currentIndex = alarmGroups.indexOf(currentItem)
@@ -224,9 +221,6 @@ fun AlarmMainScreen(
                                     listSize = alarmGroups.size,
                                     itemHeight = itemHeight
                                 )
-                                Logger.d { "Current Index : $currentIndex" }
-                                Logger.d { "Target Index : $targetIndex" }
-                                Logger.d { "Last Index : ${alarmGroups.lastIndex}" }
 
                                 if (targetIndex != null && targetIndex != currentIndex) {
                                     alarmGroups = alarmGroups.toMutableList().apply {
@@ -297,20 +291,13 @@ private fun calculateNewIndex(
     return if (newIndex != currentIndex) newIndex else null
 }
 
-interface Draggable {
-    fun onDragStart(index: Int)
-    fun onDrag(dragAmount: Float, itemHeight: Float)
-    fun onDragEnd()
-    fun onDragCancel()
-}
-
 @Composable
 private fun AlarmGroupSelectionModeItem(
     index: Int,
     isChecked: Boolean,
     alarmGroup: AlarmGroupModel,
     onCheckedChange: (AlarmGroupModel, Boolean) -> Unit,
-    dragController: Draggable,
+    dragController: DraggableItem,
     modifier: Modifier = Modifier
 ) {
     var itemHeightPx by remember { mutableStateOf(0f) }
@@ -417,7 +404,7 @@ private fun AlarmGroupItem(
                 uncheckedTrackColor = InverseOnSurfaceLight
             )
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         if (isSelectionMode) {
             Icon(
                 imageVector = Icons.Default.Menu,

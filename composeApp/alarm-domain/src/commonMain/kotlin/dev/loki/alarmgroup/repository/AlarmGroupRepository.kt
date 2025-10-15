@@ -11,6 +11,7 @@ interface AlarmGroupRepository {
     fun getAlarmGroups(sort: AlarmMainSort): Flow<List<AlarmGroup>> // 알람 그룹 목록 조회
     fun getTempAlarmGroups(): Flow<List<AlarmGroup>> // 임시 저장된 알람 그룹 목록 조회
     suspend fun createAlarmGroup(alarmGroup: AlarmGroup): Long
+    suspend fun upsertAlarmGroup(alarmGroup: AlarmGroup): Long
     suspend fun updateAlarmGroup(alarmGroup: AlarmGroup)
     suspend fun deleteAlarmGroup(alarmGroup: AlarmGroup)
     suspend fun deleteSelectedAlarmGroups(alarmGroups: List<AlarmGroup>)

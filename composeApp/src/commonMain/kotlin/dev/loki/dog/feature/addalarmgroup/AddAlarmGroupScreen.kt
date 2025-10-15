@@ -36,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.loki.dog.component.SelectionModeItem
 import dev.loki.dog.component.SwipeToDeleteItem
 import dev.loki.dog.model.AlarmGroupModel
@@ -65,13 +67,27 @@ import kotlinx.datetime.DayOfWeek
 @Composable
 fun AddAlarmGroupScreen(
     viewModel: AddAlarmGroupViewModel,
+    groupId: Long,
     onSaveOrSaveTemp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isSelectionMode by remember { mutableStateOf(false) }
     val selectedAlarmIds = remember { mutableStateListOf<Long>() }
+    val state by viewModel.state.collectAsStateWithLifecycle()
     var alarmGroup by remember { mutableStateOf(AlarmGroupModel.createTemp()) }
     val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(groupId) {
+        if (groupId != 0L) {
+            viewModel.getAlarmGroup(groupId)
+        } else {
+            alarmGroup = AlarmGroupModel.createTemp()
+        }
+    }
+
+    LaunchedEffect(state.tempAlarmGroup) {
+        alarmGroup = state.tempAlarmGroup
+    }
 
     Box(
         modifier = Modifier
@@ -87,6 +103,7 @@ fun AddAlarmGroupScreen(
                 }
                 .padding(bottom = 84.dp)
         ) {
+
             item {
                 AddAlarmGroupTopBar(
                     isSelectionMode = isSelectionMode,
@@ -132,7 +149,7 @@ fun AddAlarmGroupScreen(
 
             itemsIndexed(
                 items = alarmGroup.alarms,
-                key = { _, alarm -> alarm.id }
+                key = { _, alarm -> alarm.time }
             ) { index, alarm ->
                 if (isSelectionMode) {
                     SelectableEditableAlarmItem(
@@ -169,6 +186,7 @@ fun AddAlarmGroupScreen(
                             alarmGroup = alarmGroup.copy(
                                 alarms = alarmGroup.alarms - deleteAlarm
                             )
+                            viewModel.deleteAlarm(deleteAlarm)
                         },
                     )
                 }
@@ -259,7 +277,7 @@ private fun AddAlarmGroupTopBar(
             tint = OnTertiaryLight,
             modifier = Modifier
                 .clickable {
-                    val newAlarm = AlarmModel.createTemp(alarmGroup.id)
+                    val newAlarm = AlarmModel.createTemp(alarmGroup.id, alarmGroup.alarms)
                     onAddNewAlarm(newAlarm)
                 }
         )
@@ -272,10 +290,16 @@ private fun EditableAlarmGroupHeader(
     onItemEdit: (AlarmGroupModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var localRepeatDayOfWeeks by remember { mutableStateOf(alarmGroup.repeatDays ?: emptySet()) }
+    var localRepeatDayOfWeeks by remember { mutableStateOf(alarmGroup.repeatDays) }
     var localTitle by remember { mutableStateOf(alarmGroup.title) }
     var localDescription by remember { mutableStateOf(alarmGroup.description) }
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(alarmGroup) {
+        localTitle = alarmGroup.title
+        localDescription = alarmGroup.description
+        localRepeatDayOfWeeks = alarmGroup.repeatDays
+    }
 
     Column(
         modifier = modifier

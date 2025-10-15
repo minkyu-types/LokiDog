@@ -3,6 +3,8 @@ package dev.loki.alarm_data.database
 import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import dev.loki.alarm_data.converter.DayOfWeekSetConverter
 import dev.loki.alarm_data.dao.AlarmDao
 import dev.loki.alarm_data.dao.AlarmGroupDao
 import dev.loki.alarm_data.expect.AlarmDatabaseConstructor
@@ -17,8 +19,9 @@ import kotlinx.coroutines.IO
             AlarmEntity::class,
             AlarmGroupEntity::class,
         ],
-    version = 3
+    version = 5
 )
+@TypeConverters(DayOfWeekSetConverter::class)
 @ConstructedBy(AlarmDatabaseConstructor::class)
 abstract class AlarmDatabase: RoomDatabase() {
     abstract fun getAlarmDao(): AlarmDao
