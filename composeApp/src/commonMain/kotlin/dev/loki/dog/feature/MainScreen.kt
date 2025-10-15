@@ -41,10 +41,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.savedstate.read
 import dev.loki.dog.feature.addalarmgroup.AddAlarmGroupScreen
 import dev.loki.dog.feature.addalarmgroup.AddAlarmGroupViewModel
 import dev.loki.dog.feature.main.AlarmMainScreen
@@ -125,7 +128,7 @@ fun MainScreen(
                         navController.navigate(SubScreen.ALARM_GROUP_TEMP_LIST.name)
                     },
                     onAddClick = {
-                        navController.navigate(SubScreen.ALARM_GROUP_ADD.name)
+                        navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/0")
                     },
                     onSelectAllClick = {
                         selectAll = !selectAll
@@ -166,7 +169,7 @@ fun MainScreen(
                             deleteSelected = false
                         },
                         onAlarmGroupClick = { group ->
-                            navController.navigate(SubScreen.ALARM_GROUP_DETAIL.name)
+                            navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/${group.id}")
                         }
                     )
                 }
@@ -178,11 +181,13 @@ fun MainScreen(
                 }
 
                 composable(
-                    route = SubScreen.ALARM_GROUP_ADD.name
-                ) {
+                    route = "${SubScreen.ALARM_GROUP_ADD.name}/{groupId}",
+                    arguments = listOf(navArgument("groupId") { type = NavType.LongType})
+                ) { backstackEntry ->
                     val viewModel = getKoin().get<AddAlarmGroupViewModel>()
                     AddAlarmGroupScreen(
                         viewModel = viewModel,
+                        groupId = backstackEntry.arguments?.read { getLong("groupId") } ?: 0L,
                         onSaveOrSaveTemp = {
                             navController.popBackStack()
                         }
@@ -202,8 +207,8 @@ fun MainScreen(
                     TempAlarmGroupsScreen(
                         viewModel = viewModel,
                         onBack = { navController.popBackStack() },
-                        onAlarmGroupClick = {
-                            navController.navigate(SubScreen.ALARM_GROUP_DETAIL.name)
+                        onAlarmGroupClick = { group ->
+                            navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/${group.id}")
                         }
                     )
                 }

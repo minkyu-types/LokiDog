@@ -3,7 +3,7 @@ package dev.loki.dog.feature.main
 import dev.loki.DomainResult
 import dev.loki.alarm.usecase.AddAlarmUseCase
 import dev.loki.alarmgroup.model.AlarmMainSort
-import dev.loki.alarmgroup.usecase.AddAlarmGroupUseCase
+import dev.loki.alarmgroup.usecase.UpsertAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.DeleteAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.DeleteSelectedAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupsUseCase
@@ -33,7 +33,7 @@ class AlarmMainStore(
 ) {
     private val getAlarmGroupsUseCase: GetAlarmGroupsUseCase by inject()
     private val addAlarmUseCase: AddAlarmUseCase by inject()
-    private val addAlarmGroupUseCase: AddAlarmGroupUseCase by inject()
+    private val upsertAlarmGroupUseCase: UpsertAlarmGroupUseCase by inject()
     private val updateAlarmGroupUseCase: UpdateAlarmGroupUseCase by inject()
     private val deleteAlarmGroupUseCase: DeleteAlarmGroupUseCase by inject()
     private val deleteSelectedAlarmGroupUseCase: DeleteSelectedAlarmGroupsUseCase by inject()
@@ -110,7 +110,7 @@ class AlarmMainStore(
         val domainAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup)
 
         viewModelScope.launch {
-            addAlarmGroupUseCase(domainAlarmGroup)
+            upsertAlarmGroupUseCase(domainAlarmGroup)
         }
     }
 
