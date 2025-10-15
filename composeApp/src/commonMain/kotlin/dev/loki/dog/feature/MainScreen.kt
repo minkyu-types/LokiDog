@@ -62,7 +62,6 @@ import lokidog.composeapp.generated.resources.Res
 import lokidog.composeapp.generated.resources.bottom_bar_alarm_group_list
 import lokidog.composeapp.generated.resources.bottom_bar_alarm_timer
 import lokidog.composeapp.generated.resources.screen_sub_alarm_group_add
-import lokidog.composeapp.generated.resources.screen_sub_alarm_group_detail
 import lokidog.composeapp.generated.resources.screen_sub_alarm_group_list_temp
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform.getKoin
@@ -73,12 +72,11 @@ fun MainScreen(
 ) {
     val backstackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backstackEntry?.destination?.route
-    val currentScreen: Screens = when (currentRoute) {
-        MainScreen.ALARM.name -> MainScreen.ALARM
-        MainScreen.TIMER.name -> MainScreen.TIMER
-        SubScreen.ALARM_GROUP_ADD.name -> SubScreen.ALARM_GROUP_ADD
-        SubScreen.ALARM_GROUP_DETAIL.name -> SubScreen.ALARM_GROUP_DETAIL
-        SubScreen.ALARM_GROUP_TEMP_LIST.name -> SubScreen.ALARM_GROUP_TEMP_LIST
+    val currentScreen: Screens = when {
+        currentRoute == MainScreen.ALARM.name -> MainScreen.ALARM
+        currentRoute == MainScreen.TIMER.name -> MainScreen.TIMER
+        currentRoute == SubScreen.ALARM_GROUP_TEMP_LIST.name -> SubScreen.ALARM_GROUP_TEMP_LIST
+        currentRoute?.startsWith(SubScreen.ALARM_GROUP_ADD.name) == true -> SubScreen.ALARM_GROUP_ADD
         else -> MainScreen.ALARM
     }
     val mainScreens = listOf(MainScreen.ALARM, MainScreen.TIMER)
@@ -128,7 +126,7 @@ fun MainScreen(
                         navController.navigate(SubScreen.ALARM_GROUP_TEMP_LIST.name)
                     },
                     onAddClick = {
-                        navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/0")
+                        navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/${0L}")
                     },
                     onSelectAllClick = {
                         selectAll = !selectAll
@@ -184,20 +182,12 @@ fun MainScreen(
                     route = "${SubScreen.ALARM_GROUP_ADD.name}/{groupId}",
                     arguments = listOf(navArgument("groupId") { type = NavType.LongType})
                 ) { backstackEntry ->
-                    val viewModel = getKoin().get<AddAlarmGroupViewModel>()
                     AddAlarmGroupScreen(
-                        viewModel = viewModel,
                         groupId = backstackEntry.arguments?.read { getLong("groupId") } ?: 0L,
                         onSaveOrSaveTemp = {
                             navController.popBackStack()
                         }
                     )
-                }
-
-                composable(
-                    route = SubScreen.ALARM_GROUP_DETAIL.name
-                ) {
-
                 }
 
                 composable(
@@ -373,7 +363,6 @@ fun MainScreen.getTitle(): String {
 fun SubScreen.getTitle(): String {
     return when (this) {
         SubScreen.ALARM_GROUP_ADD-> stringResource(Res.string.screen_sub_alarm_group_add)
-        SubScreen.ALARM_GROUP_DETAIL -> stringResource(Res.string.screen_sub_alarm_group_detail)
         SubScreen.ALARM_GROUP_TEMP_LIST -> stringResource(Res.string.screen_sub_alarm_group_list_temp)
     }
 }

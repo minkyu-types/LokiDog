@@ -1,4 +1,4 @@
-package dev.loki.dog.feature.detailalarmgroup
+package dev.loki.dog.feature.addalarmgroup
 
 object TempAlarmTimeGenerator {
     private var currHour = 0

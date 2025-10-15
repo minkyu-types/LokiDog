@@ -3,7 +3,6 @@
     <string name="bottom_bar_alarm_timer">Timer</string>
 
     <string name="screen_sub_alarm_group_add">Add Alarm Group</string>
-    <string name="screen_sub_alarm_group_detail">Alarm Group Detail</string>
     <string name="screen_sub_alarm_group_list_temp">Temp Alarm Group List</string>
 
     <string name="title_alarm_group_temp">Saved</string>
