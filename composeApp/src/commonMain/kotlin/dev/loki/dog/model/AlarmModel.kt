@@ -1,6 +1,6 @@
 package dev.loki.dog.model
 
-import dev.loki.dog.feature.detailalarmgroup.TempAlarmTimeGenerator
+import dev.loki.dog.feature.addalarmgroup.TempAlarmTimeGenerator
 
 data class AlarmModel(
     val id: Long,

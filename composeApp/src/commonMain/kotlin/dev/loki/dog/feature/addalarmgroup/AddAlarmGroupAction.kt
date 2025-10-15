@@ -9,4 +9,5 @@ sealed class AddAlarmGroupAction: BaseAction {
     data class Save(val alarmGroup: AlarmGroupModel) : AddAlarmGroupAction()
     data class SaveTemp(val alarmGroup: AlarmGroupModel) : AddAlarmGroupAction()
     data class DeleteAlarm(val alarm: AlarmModel) : AddAlarmGroupAction()
+    data object GetTempAlarmGroup : AddAlarmGroupAction()
 }
