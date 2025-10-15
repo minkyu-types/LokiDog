@@ -16,6 +16,7 @@ kotlin {
                 implementation(libs.koin.annotations)
                 implementation(libs.kotlinx.coroutines.core)
                 implementation(libs.androidx.paging3.common)
+                implementation(libs.kotlinx.datetime)
             }
         }
     }
