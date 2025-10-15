@@ -63,14 +63,15 @@ import dev.loki.dog.theme.OnTertiaryLight
 import dev.loki.dog.theme.OutlineLight
 import dev.loki.dog.theme.PrimaryContainerLight
 import kotlinx.datetime.DayOfWeek
+import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
 fun AddAlarmGroupScreen(
-    viewModel: AddAlarmGroupViewModel,
     groupId: Long,
     onSaveOrSaveTemp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel = getKoin().get<AddAlarmGroupViewModel>()
     var isSelectionMode by remember { mutableStateOf(false) }
     val selectedAlarmIds = remember { mutableStateListOf<Long>() }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -81,7 +82,7 @@ fun AddAlarmGroupScreen(
         if (groupId != 0L) {
             viewModel.getAlarmGroup(groupId)
         } else {
-            alarmGroup = AlarmGroupModel.createTemp()
+            viewModel.getTempAlarmGroup()
         }
     }
 
@@ -261,16 +262,20 @@ private fun AddAlarmGroupTopBar(
                 }
         )
         Spacer(modifier = Modifier.width(24.dp))
-        Icon(
-            imageVector = Icons.Default.LibraryAdd,
-            contentDescription = null,
-            tint = OnTertiaryLight,
-            modifier = Modifier
-                .clickable {
-                    onSaveTempAlarmGroup(alarmGroup)
-                }
-        )
-        Spacer(modifier = Modifier.width(24.dp))
+
+        if (alarmGroup.id == 0L) {
+            Icon(
+                imageVector = Icons.Default.LibraryAdd,
+                contentDescription = null,
+                tint = OnTertiaryLight,
+                modifier = Modifier
+                    .clickable {
+                        onSaveTempAlarmGroup(alarmGroup)
+                    }
+            )
+            Spacer(modifier = Modifier.width(24.dp))
+        }
+
         Icon(
             imageVector = Icons.Default.Add,
             contentDescription = null,

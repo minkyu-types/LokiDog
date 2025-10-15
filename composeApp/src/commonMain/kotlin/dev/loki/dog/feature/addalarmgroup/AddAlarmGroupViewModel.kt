@@ -25,4 +25,8 @@ class AddAlarmGroupViewModel(
     fun deleteAlarm(alarm: AlarmModel) {
         dispatch(AddAlarmGroupAction.DeleteAlarm(alarm))
     }
+
+    fun getTempAlarmGroup() {
+        dispatch(AddAlarmGroupAction.GetTempAlarmGroup)
+    }
 }

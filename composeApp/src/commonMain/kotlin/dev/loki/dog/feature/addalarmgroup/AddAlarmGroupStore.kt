@@ -1,8 +1,6 @@
 package dev.loki.dog.feature.addalarmgroup
 
-import co.touchlab.kermit.Logger
 import dev.loki.DomainResult
-import dev.loki.alarm.usecase.AddAlarmUseCase
 import dev.loki.alarm.usecase.DeleteAlarmUseCase
 import dev.loki.alarm.usecase.UpsertAlarmUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupWithAlarmsUseCase
@@ -32,7 +30,6 @@ class AddAlarmGroupStore(
     private val alarmMapper: AlarmMapper by inject()
     private val alarmGroupMapper: AlarmGroupMapper by inject()
 
-    private val addAlarmUseCase: AddAlarmUseCase by inject()
     private val upsertAlarmUseCase: UpsertAlarmUseCase by inject()
     private val deleteAlarmUseCase: DeleteAlarmUseCase by inject()
 
@@ -52,6 +49,14 @@ class AddAlarmGroupStore(
 
             is AddAlarmGroupAction.DeleteAlarm -> {
                 deleteAlarm(action.alarm)
+            }
+
+            is AddAlarmGroupAction.GetTempAlarmGroup -> {
+                setState {
+                    copy(
+                        tempAlarmGroup = AlarmGroupModel.createTemp()
+                    )
+                }
             }
         }
     }
@@ -96,11 +101,6 @@ class AddAlarmGroupStore(
                 groupId = domainAlarmGroup.id,
                 isTemp = false
             )
-        }
-
-        Logger.d { "DomainAlarmGroup: $domainAlarmGroup" }
-        domainAlarms.forEach {
-            Logger.d { "DomainAlarms: $it" }
         }
 
         viewModelScope.launch {
