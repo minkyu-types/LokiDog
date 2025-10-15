@@ -47,6 +47,10 @@ class AddAlarmGroupStore(
                 saveTempAlarmGroup(action.alarmGroup)
             }
 
+            is AddAlarmGroupAction.UpdateAlarm -> {
+                upsertAlarm(action.alarm)
+            }
+
             is AddAlarmGroupAction.DeleteAlarm -> {
                 deleteAlarm(action.alarm)
             }
@@ -126,6 +130,14 @@ class AddAlarmGroupStore(
             }
 
             alarmJobs.forEach { upsertAlarmUseCase(it) }
+        }
+    }
+
+    private fun upsertAlarm(alarm: AlarmModel) {
+        val domainAlarm = alarmMapper.mapToDomain(alarm)
+
+        viewModelScope.launch {
+            upsertAlarmUseCase(domainAlarm)
         }
     }
 
