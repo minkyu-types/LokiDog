@@ -9,6 +9,5 @@ enum class MainScreen: Screens {
 
 enum class SubScreen: Screens {
     ALARM_GROUP_ADD,
-    ALARM_GROUP_DETAIL,
     ALARM_GROUP_TEMP_LIST,
 }
