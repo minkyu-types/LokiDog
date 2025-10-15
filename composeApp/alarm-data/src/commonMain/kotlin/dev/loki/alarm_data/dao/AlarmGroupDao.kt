@@ -3,8 +3,10 @@ package dev.loki.alarm_data.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import dev.loki.alarm_data.model.AlarmGroupEntity
 import dev.loki.alarm_data.model.AlarmGroupWithAlarms
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +35,7 @@ interface AlarmGroupDao {
     @Query("SELECT * FROM alarm_group WHERE isTemp = 1 ORDER BY updatedAt DESC")
     fun getTempAlarmGroups(): Flow<List<AlarmGroupEntity>>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: AlarmGroupEntity): Long
 
     @Update
