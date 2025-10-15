@@ -1,21 +1,30 @@
 package dev.loki.dog.model
 
-import dev.loki.dog.feature.detailalarmgroup.TempIdGenerator
+import dev.loki.dog.feature.detailalarmgroup.TempAlarmTimeGenerator
 
 data class AlarmModel(
     val id: Long,
-    val groupId: Long?,
-    val time: Long, // 언제 울려야하는지
+    val groupId: Long,
+    val time: String,
     val isActivated: Boolean,
     val isTemp: Boolean,
 ) {
     companion object {
-        fun createTemp(groupId: Long): AlarmModel = AlarmModel(
-            id = TempIdGenerator.next(),
-            groupId = groupId,
-            time = 0,
-            isActivated = true,
-            isTemp = true,
-        )
+        fun createTemp(groupId: Long, prevAlarms: List<AlarmModel>): AlarmModel {
+            var newTime = TempAlarmTimeGenerator.nextTime()
+            val prevTimes = prevAlarms.map { it.time }
+
+            while (newTime in prevTimes) {
+                newTime = TempAlarmTimeGenerator.nextTime()
+            }
+
+            return AlarmModel(
+                id = 0,
+                groupId = groupId,
+                time = newTime,
+                isActivated = true,
+                isTemp = true,
+            )
+        }
     }
 }
