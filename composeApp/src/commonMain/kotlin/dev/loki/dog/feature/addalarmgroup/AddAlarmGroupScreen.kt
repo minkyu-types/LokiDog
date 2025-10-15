@@ -63,6 +63,10 @@ import dev.loki.dog.theme.OnTertiaryLight
 import dev.loki.dog.theme.OutlineLight
 import dev.loki.dog.theme.PrimaryContainerLight
 import kotlinx.datetime.DayOfWeek
+import lokidog.composeapp.generated.resources.Res
+import lokidog.composeapp.generated.resources.alarms
+import lokidog.composeapp.generated.resources.save
+import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
@@ -138,14 +142,16 @@ fun AddAlarmGroupScreen(
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Text(
-                    text = "Alarms ${alarmGroup.alarms.size}",
+                    text = stringResource(Res.string.alarms, alarmGroup.alarms.size),
                     color = OnTertiaryLight,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier
                         .padding(start = 32.dp)
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             itemsIndexed(
@@ -182,6 +188,7 @@ fun AddAlarmGroupScreen(
                             alarmGroup = alarmGroup.copy(
                                 alarms = updatedAlarms
                             )
+                            viewModel.updateAlarm(editedAlarm)
                         },
                         onAlarmDelete = { deleteAlarm ->
                             alarmGroup = alarmGroup.copy(
@@ -221,7 +228,7 @@ fun AddAlarmGroupScreen(
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Text(text = "저장하기", fontSize = 18.sp)
+            Text(text = stringResource(Res.string.save), fontSize = 18.sp)
         }
     }
 }
@@ -497,39 +504,11 @@ private fun SelectableEditableAlarmItem(
         modifier = Modifier
             .padding(start = 32.dp, end = 24.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        AlarmItem(
+            alarm = alarm,
+            onAlarmEdit = onAlarmEdit,
             modifier = modifier
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    // 다이얼로그 열기(시간 변경)
-                    onCheckedChange(alarm.id)
-                }
-                .padding(vertical = 16.dp)
-        ) {
-            Text(
-                text = alarm.id.toString(),
-                fontSize = 32.sp,
-                color = OnTertiaryLight
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            Switch(
-                checked = alarm.isActivated,
-                onCheckedChange = {
-                    onAlarmEdit(
-                        alarm.copy(
-                            isActivated = it
-                        )
-                    )
-                },
-                colors = SwitchDefaults.colors(
-                    checkedTrackColor = ConstraintLight,
-                    uncheckedTrackColor = InverseOnSurfaceLight
-                )
-            )
-        }
+        )
     }
 }
 
@@ -546,42 +525,49 @@ private fun EditableAlarmItem(
             onAlarmDelete(alarm)
         },
         content = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            AlarmItem(
+                alarm = alarm,
+                onAlarmEdit = onAlarmEdit,
                 modifier = modifier
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        // 다이얼로그 열기(시간 변경)
-                    }
-                    .padding(vertical = 16.dp)
-            ) {
-                Text(
-                    text = alarm.id.toString(),
-                    fontSize = 32.sp,
-                    color = OnTertiaryLight
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Switch(
-                    checked = alarm.isActivated,
-                    onCheckedChange = {
-                        onAlarmEdit(
-                            alarm.copy(
-                                isActivated = it
-                            )
-                        )
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedTrackColor = ConstraintLight,
-                        uncheckedTrackColor = InverseOnSurfaceLight
-                    )
-                )
-            }
+            )
         },
         modifier = Modifier
             .padding(start = 32.dp, end = 24.dp)
     )
+}
+
+@Composable
+private fun AlarmItem(
+    alarm: AlarmModel,
+    onAlarmEdit: (AlarmModel) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .padding(vertical = 16.dp)
+    ) {
+        Text(
+            text = alarm.time,
+            fontSize = 32.sp,
+            color = OnTertiaryLight
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        Switch(
+            checked = alarm.isActivated,
+            onCheckedChange = {
+                onAlarmEdit(
+                    alarm.copy(
+                        isActivated = it
+                    )
+                )
+            },
+            colors = SwitchDefaults.colors(
+                checkedTrackColor = ConstraintLight,
+                uncheckedTrackColor = InverseOnSurfaceLight
+            )
+        )
+    }
 }
 
 private fun detectDayOfWeekFromText(text: String): DayOfWeek? {
