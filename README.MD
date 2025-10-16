@@ -8,7 +8,7 @@
 
 ## 아키텍처
 - composeApp(androidApp) / iosApp으로 구성되어 있습니다.
-- 멀티 모듈 클린 아키텍처 + MVI(Orbit 프레임워크) 구조로 설계하였습니다.
+- 멀티 모듈 클린 아키텍처 + MVI 구조로 설계하였습니다.
 <img width="2342" height="1531" alt="Image" src="https://github.com/user-attachments/assets/d4a146fe-5c8f-4ac0-bc6a-1ab279d3d833" />
 
 ## 사용 기술
