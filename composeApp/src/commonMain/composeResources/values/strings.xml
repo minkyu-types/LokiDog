@@ -1,5 +1,6 @@
 <resources>
     <string name="save">저장</string>
+    <string name="save_temp">임시 보관함</string>
     <string name="alarms">알람 %1$d개</string>
 
     <string name="bottom_bar_alarm_group_list">알람 그룹</string>

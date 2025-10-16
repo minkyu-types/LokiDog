@@ -49,7 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.savedstate.read
 import dev.loki.dog.feature.addalarmgroup.AddAlarmGroupScreen
-import dev.loki.dog.feature.addalarmgroup.AddAlarmGroupViewModel
+import dev.loki.dog.feature.addalarmgroup.TempAlarmTimeGenerator
 import dev.loki.dog.feature.main.AlarmMainScreen
 import dev.loki.dog.feature.main.AlarmMainViewModel
 import dev.loki.dog.feature.temp.TempAlarmGroupsScreen
@@ -85,6 +85,7 @@ fun MainScreen(
     var isSelectionMode by remember { mutableStateOf(false) }
     var selectAll by remember { mutableStateOf(false) }
     var deleteSelected by remember { mutableStateOf(false) }
+    var tempAlarmGroupSize by remember { mutableStateOf(0) }
 
     Scaffold(
         modifier = Modifier,
@@ -122,6 +123,7 @@ fun MainScreen(
             if (currentScreen == MainScreen.ALARM) {
                 MainFabMenu(
                     isSelectionMode = isSelectionMode,
+                    tempAlarmGroupSize = tempAlarmGroupSize,
                     onTempClick = {
                         navController.navigate(SubScreen.ALARM_GROUP_TEMP_LIST.name)
                     },
@@ -166,6 +168,9 @@ fun MainScreen(
                         onDeleteComplete = {
                             deleteSelected = false
                         },
+                        onTempSizeUpdate = { size ->
+                            tempAlarmGroupSize = size
+                        },
                         onAlarmGroupClick = { group ->
                             navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/${group.id}")
                         }
@@ -185,6 +190,7 @@ fun MainScreen(
                     AddAlarmGroupScreen(
                         groupId = backstackEntry.arguments?.read { getLong("groupId") } ?: 0L,
                         onSaveOrSaveTemp = {
+                            TempAlarmTimeGenerator.reset()
                             navController.popBackStack()
                         }
                     )
@@ -210,6 +216,7 @@ fun MainScreen(
 @Composable
 private fun MainFabMenu(
     isSelectionMode: Boolean,
+    tempAlarmGroupSize: Int,
     onTempClick: () -> Unit,
     onAddClick: () -> Unit,
     onSelectAllClick: () -> Unit,
@@ -255,7 +262,7 @@ private fun MainFabMenu(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "4",
+                                text = tempAlarmGroupSize.toString(),
                                 color = Color.White,
                                 fontSize = 12.sp,
                             )

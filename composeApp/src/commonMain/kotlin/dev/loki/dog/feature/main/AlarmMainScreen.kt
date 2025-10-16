@@ -45,8 +45,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,12 +52,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.loki.alarmgroup.model.AlarmMainSort
-import dev.loki.dog.component.SelectionModeItem
-import dev.loki.dog.component.SwipeToDeleteItem
+import dev.loki.dog.component.AlarmGroupSelectionModeItem
+import dev.loki.dog.component.AlarmGroupSwipeToDeleteItem
 import dev.loki.dog.handler.DraggableItem
 import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.theme.ConstraintLight
-import dev.loki.dog.theme.InverseOnSurfaceLight
 import dev.loki.dog.theme.OnPrimaryContainerLight
 import dev.loki.dog.theme.OnTertiaryLight
 import dev.loki.dog.theme.PrimaryLight
@@ -83,6 +80,7 @@ fun AlarmMainScreen(
     deleteSelectedItems: Boolean,
     viewModel: AlarmMainViewModel,
     onDeleteComplete: () -> Unit,
+    onTempSizeUpdate: (Int) -> Unit,
     onAlarmGroupClick: (AlarmGroupModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -104,6 +102,10 @@ fun AlarmMainScreen(
 
     LaunchedEffect(isSelectionMode) {
         selectedItems.clear()
+    }
+
+    LaunchedEffect(state.tempAlarmSize) {
+        onTempSizeUpdate(state.tempAlarmSize)
     }
 
     LaunchedEffect(state.alarmGroupList) {
@@ -289,136 +291,6 @@ private fun calculateNewIndex(
     val movedPositions = (offsetY / itemHeight).toInt()
     val newIndex = (currentIndex + movedPositions).coerceIn(0, listSize - 1)
     return if (newIndex != currentIndex) newIndex else null
-}
-
-@Composable
-private fun AlarmGroupSelectionModeItem(
-    index: Int,
-    isChecked: Boolean,
-    alarmGroup: AlarmGroupModel,
-    onCheckedChange: (AlarmGroupModel, Boolean) -> Unit,
-    dragController: DraggableItem,
-    modifier: Modifier = Modifier
-) {
-    var itemHeightPx by remember { mutableStateOf(0f) }
-
-    SelectionModeItem(
-        item = alarmGroup,
-        isChecked = isChecked,
-        onCheckedChange = { group, checked ->
-            onCheckedChange(group, checked)
-        },
-        content = {
-            AlarmGroupItem(
-                alarmGroup = alarmGroup,
-                isSelectionMode = true
-            )
-        },
-        modifier = modifier
-            .onGloballyPositioned { layoutCoordinates ->
-                itemHeightPx = layoutCoordinates.size.height.toFloat()
-            }
-            .pointerInput(itemHeightPx) {
-                detectDragGesturesAfterLongPress(
-                    onDragStart = {
-                        dragController.onDragStart(index)
-                    },
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        dragController.onDrag(dragAmount.y, itemHeightPx)
-                    },
-                    onDragEnd = {
-                        dragController.onDragEnd()
-                    },
-                    onDragCancel = {
-                        dragController.onDragCancel()
-                    }
-                )
-            }
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {
-                onCheckedChange(alarmGroup, !isChecked)
-            }
-            .padding(horizontal = 16.dp)
-    )
-}
-
-@Composable
-private fun AlarmGroupSwipeToDeleteItem(
-    alarmGroup: AlarmGroupModel,
-    onAlarmGroupClick: (AlarmGroupModel) -> Unit,
-    onActivationChange: (AlarmGroupModel) -> Unit,
-    onDelete: (AlarmGroupModel) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    SwipeToDeleteItem(
-        item = alarmGroup,
-        onDelete = onDelete,
-        content = {
-            AlarmGroupItem(
-                alarmGroup = alarmGroup,
-                isSelectionMode = false,
-                onActivationChange = {
-                    onActivationChange(it)
-                }
-            )
-        },
-        modifier = modifier
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) {
-                onAlarmGroupClick(alarmGroup)
-            }
-            .padding(start = 24.dp, end = 16.dp)
-    )
-}
-
-@Composable
-private fun AlarmGroupItem(
-    alarmGroup: AlarmGroupModel,
-    isSelectionMode: Boolean,
-    onActivationChange: ((AlarmGroupModel) -> Unit)? = null,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(vertical = 20.dp)
-    ) {
-        Text(
-            text = alarmGroup.title,
-            fontSize = 28.sp,
-            color = OnTertiaryLight
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Switch(
-            checked = alarmGroup.isActivated,
-            onCheckedChange = {
-                onActivationChange?.invoke(alarmGroup.copy(isActivated = it))
-            },
-            colors = SwitchDefaults.colors(
-                checkedTrackColor = ConstraintLight,
-                uncheckedTrackColor = InverseOnSurfaceLight
-            )
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        if (isSelectionMode) {
-            Icon(
-                imageVector = Icons.Default.Menu,
-                contentDescription = null,
-                tint = OnTertiaryLight
-            )
-        } else {
-            Icon(
-                imageVector = Icons.AutoMirrored.Sharp.ArrowRight,
-                contentDescription = null,
-                tint = OnTertiaryLight
-            )
-        }
-    }
 }
 
 @Composable
