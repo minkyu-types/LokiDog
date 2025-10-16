@@ -1,12 +1,11 @@
 package dev.loki.dog.feature.main
 
 import dev.loki.DomainResult
-import dev.loki.alarm.usecase.AddAlarmUseCase
 import dev.loki.alarmgroup.model.AlarmMainSort
 import dev.loki.alarmgroup.usecase.UpsertAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.DeleteAlarmGroupUseCase
-import dev.loki.alarmgroup.usecase.DeleteSelectedAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupsUseCase
+import dev.loki.alarmgroup.usecase.GetTempAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
 import dev.loki.dog.feature.base.BaseAction
 import dev.loki.dog.feature.base.BaseStore
@@ -32,17 +31,17 @@ class AlarmMainStore(
     initialState = AlarmMainState()
 ) {
     private val getAlarmGroupsUseCase: GetAlarmGroupsUseCase by inject()
-    private val addAlarmUseCase: AddAlarmUseCase by inject()
+    private val getTempAlarmsUseCase: GetTempAlarmGroupsUseCase by inject()
     private val upsertAlarmGroupUseCase: UpsertAlarmGroupUseCase by inject()
     private val updateAlarmGroupUseCase: UpdateAlarmGroupUseCase by inject()
     private val deleteAlarmGroupUseCase: DeleteAlarmGroupUseCase by inject()
-    private val deleteSelectedAlarmGroupUseCase: DeleteSelectedAlarmGroupsUseCase by inject()
     private val alarmGroupMapper: AlarmGroupMapper by inject()
 
     private val currentSort = MutableStateFlow(AlarmMainSort.MOST_RECENT_CREATED)
 
     init {
         observeAlarmGroups()
+        observeTempAlarmGroupSize()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -69,6 +68,22 @@ class AlarmMainStore(
                                 )
                             )
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeTempAlarmGroupSize() {
+        viewModelScope.launch {
+            getTempAlarmsUseCase().collect { domainResult ->
+                when (domainResult) {
+                    is DomainResult.Success -> {
+                        setState { copy(tempAlarmSize = domainResult.data.size) }
+                    }
+
+                    is DomainResult.Error -> {
+                        setState { copy(tempAlarmSize = 0) }
                     }
                 }
             }
