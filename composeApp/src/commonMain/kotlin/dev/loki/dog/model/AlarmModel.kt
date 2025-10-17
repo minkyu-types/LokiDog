@@ -6,6 +6,7 @@ data class AlarmModel(
     val id: Long,
     val groupId: Long,
     val time: String,
+    val memo: String,
     val isActivated: Boolean,
     val isTemp: Boolean,
 ) {
@@ -22,6 +23,7 @@ data class AlarmModel(
                 id = 0,
                 groupId = groupId,
                 time = newTime,
+                memo = "",
                 isActivated = true,
                 isTemp = true,
             )

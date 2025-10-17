@@ -10,6 +10,7 @@ class AlarmMapper {
             id = alarm.id,
             groupId = alarm.groupId,
             time = alarm.time,
+            memo = alarm.memo,
             isActivated = alarm.isActivated,
             isTemp = alarm.isTemp,
         )
@@ -20,6 +21,7 @@ class AlarmMapper {
             id = alarm.id,
             groupId = alarm.groupId,
             time = alarm.time,
+            memo = alarm.memo,
             isActivated = alarm.isActivated,
             isTemp = alarm.isTemp,
         )

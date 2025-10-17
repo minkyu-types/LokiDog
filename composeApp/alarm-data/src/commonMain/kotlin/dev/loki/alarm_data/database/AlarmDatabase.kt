@@ -19,7 +19,7 @@ import kotlinx.coroutines.IO
             AlarmEntity::class,
             AlarmGroupEntity::class,
         ],
-    version = 5
+    version = 7
 )
 @TypeConverters(DayOfWeekSetConverter::class)
 @ConstructedBy(AlarmDatabaseConstructor::class)
