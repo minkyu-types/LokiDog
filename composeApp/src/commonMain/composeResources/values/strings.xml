@@ -1,4 +1,5 @@
 <resources>
+    <string name="confirm">확인</string>
     <string name="save">저장</string>
     <string name="save_temp">임시 보관함</string>
     <string name="alarms">알람 %1$d개</string>
