@@ -11,6 +11,7 @@ data class AlarmGroupEntity(
     val title: String,
     val description: String,
     val repeatDays: Set<DayOfWeek> = emptySet(),
+    val alarmSize: Int,
     val createdAt: Long,
     val updatedAt: Long,
     val isActivated: Boolean,

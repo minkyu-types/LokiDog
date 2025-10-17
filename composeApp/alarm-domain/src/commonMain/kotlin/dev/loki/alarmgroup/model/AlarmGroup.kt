@@ -7,6 +7,7 @@ data class AlarmGroup(
     val id: Long,
     val title: String,
     val description: String,
+    val includedAlarmsSize: Int,
     val repeatDays: Set<DayOfWeek> = emptySet(),
     val isActivated: Boolean,
     val created: Long,

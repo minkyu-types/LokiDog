@@ -100,21 +100,18 @@ class AddAlarmGroupStore(
 
     private fun saveAlarmGroup(alarmGroup: AlarmGroupModel) {
         val domainAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup).copy(isTemp = false)
-        val domainAlarms = alarmGroup.alarms.map {
-            alarmMapper.mapToDomain(it).copy(
-                groupId = domainAlarmGroup.id,
-                isTemp = false
-            )
-        }
 
         viewModelScope.launch {
             val groupId = upsertAlarmGroupUseCase(domainAlarmGroup)
 
-            val alarmsWithGroupId = domainAlarms.map {
-                it.copy(groupId = groupId)
+            val domainAlarms = alarmGroup.alarms.map {
+                alarmMapper.mapToDomain(it).copy(
+                    groupId = groupId,
+                    isTemp = false
+                )
             }
 
-            alarmsWithGroupId.forEach { upsertAlarmUseCase(it) }
+            domainAlarms.forEach { upsertAlarmUseCase(it) }
         }
     }
 

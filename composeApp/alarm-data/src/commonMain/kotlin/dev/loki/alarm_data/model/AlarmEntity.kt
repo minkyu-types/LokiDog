@@ -21,6 +21,7 @@ data class AlarmEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val groupId: Long,
     val time: String,
+    val memo: String,
     val isActivated: Boolean,
     val isTemp: Boolean,
 )
