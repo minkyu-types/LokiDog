@@ -22,7 +22,6 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
-import co.touchlab.kermit.Logger
 
 @Composable
 fun < T> InfiniteCircularList(

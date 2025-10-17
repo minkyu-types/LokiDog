@@ -8,5 +8,5 @@ import org.koin.dsl.module
 
 val alarmRepositoryModule = module {
     single<AlarmGroupRepository> { AlarmGroupRepositoryImpl(get(), get(), get()) }
-    single<AlarmRepository> { AlarmRepositoryImpl(get(), get()) }
+    single<AlarmRepository> { AlarmRepositoryImpl(get(), get(), get()) }
 }
