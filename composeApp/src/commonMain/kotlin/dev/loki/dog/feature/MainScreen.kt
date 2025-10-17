@@ -236,7 +236,7 @@ private fun MainFabMenu(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier.padding(12.dp)
         ) {
-            AnimatedVisibility(visible = expanded) {
+            AnimatedVisibility(visible = (expanded && (tempAlarmGroupSize != 0))) {
                 FloatingActionButton(
                     onClick = {
                         onTempClick()
