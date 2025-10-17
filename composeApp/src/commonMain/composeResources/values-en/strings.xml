@@ -1,4 +1,5 @@
 <resources>
+    <string name="confirm">Confirm</string>
     <string name="save">Save</string>
     <string name="save_temp">Shelf</string>
     <string name="alarms">%1$d Alarms</string>
