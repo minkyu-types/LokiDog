@@ -22,8 +22,8 @@ class AddAlarmGroupViewModel(
         dispatch(AddAlarmGroupAction.SaveTemp(alarmGroup))
     }
 
-    fun updateAlarm(alarm: AlarmModel) {
-        dispatch(AddAlarmGroupAction.UpdateAlarm(alarm))
+    fun updateAlarm(alarmGroup: AlarmGroupModel, alarm: AlarmModel) {
+        dispatch(AddAlarmGroupAction.UpdateAlarm(alarmGroup, alarm))
     }
 
     fun deleteAlarm(alarm: AlarmModel) {

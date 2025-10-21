@@ -42,16 +42,16 @@ fun AlarmGroupSwipeToDeleteItem(
                     },
                     modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
                 Icon(
                     imageVector = Icons.AutoMirrored.Sharp.ArrowRight,
                     contentDescription = null,
-                    tint = OnTertiaryLight
+                    tint = OnTertiaryLight,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
         },
         modifier = modifier
-            .padding(end = 8.dp)
+            .padding(end = 16.dp)
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }

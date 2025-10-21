@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -24,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EditOff
 import androidx.compose.material.icons.filled.LibraryAdd
@@ -62,6 +62,7 @@ import dev.loki.dog.component.TimeWheelBottomSheet
 import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.model.AlarmModel
 import dev.loki.dog.theme.ConstraintLight
+import dev.loki.dog.theme.ErrorLighter
 import dev.loki.dog.theme.InverseOnSurfaceLight
 import dev.loki.dog.theme.OnPrimaryContainerLight
 import dev.loki.dog.theme.OnTertiaryLight
@@ -76,6 +77,7 @@ import lokidog.composeapp.generated.resources.save
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform.getKoin
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AddAlarmGroupScreen(
     groupId: Long,
@@ -84,7 +86,7 @@ fun AddAlarmGroupScreen(
 ) {
     val viewModel = getKoin().get<AddAlarmGroupViewModel>()
     var isSelectionMode by remember { mutableStateOf(false) }
-    val selectedAlarmIds = remember { mutableStateListOf<Long>() }
+    val selectedAlarmIndexes = remember { mutableStateListOf<Int>() }
     val state by viewModel.state.collectAsStateWithLifecycle()
     var alarmGroup by remember { mutableStateOf(AlarmGroupModel.createTemp()) }
     val focusManager = LocalFocusManager.current
@@ -127,12 +129,11 @@ fun AddAlarmGroupScreen(
     ) {
         Column {
             AddAlarmGroupTopBar(
-                isSelectionMode = isSelectionMode,
                 alarmGroup = alarmGroup,
                 onSaveOrSaveTemp = onSaveOrSaveTemp,
                 onSelectionModeChange = {
                     isSelectionMode = it
-                    selectedAlarmIds.clear()
+                    selectedAlarmIndexes.clear()
                 },
                 onAddNewAlarm = { newAlarm ->
                     alarmGroup = alarmGroup.copy(
@@ -147,14 +148,14 @@ fun AddAlarmGroupScreen(
 
             LazyColumn(
                 modifier = modifier
-                    .fillMaxSize()
+                    .weight(1f)
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
                         focusManager.clearFocus()
                     }
-                    .padding(bottom = 84.dp)
+                    .padding(bottom = 16.dp)
             ) {
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
@@ -169,48 +170,98 @@ fun AddAlarmGroupScreen(
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                        text = stringResource(Res.string.alarms, alarmGroup.alarms.size), // TODO(유료 구독 상태에 따라 최대 개수 조절)
-                        color = OnTertiaryLight,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
+                    Row(
                         modifier = Modifier
-                            .padding(start = 32.dp)
-                    )
-                    Text(
-                        text = stringResource(Res.string.alarms_max_description, 10),
-                        color = OutlineVariantLight,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .padding(start = 32.dp)
-                    )
+                            .padding(start = 32.dp, end = 24.dp)
+                    ) {
+                        Column {
+                            Text(
+                                text = stringResource(
+                                    Res.string.alarms,
+                                    alarmGroup.alarms.size
+                                ), // TODO(유료 구독 상태에 따라 최대 개수 조절)
+                                color = OnTertiaryLight,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier
+                            )
+                            Text(
+                                text = stringResource(Res.string.alarms_max_description, 10),
+                                color = OutlineVariantLight,
+                                fontSize = 14.sp,
+                                modifier = Modifier
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        if (isSelectionMode && selectedAlarmIndexes.isNotEmpty()) {
+                            IconButton(
+                                onClick = {
+                                    val updatedAlarms = alarmGroup.alarms
+                                        .filterIndexed { index, _ ->
+                                            index !in selectedAlarmIndexes
+                                        }
+                                    alarmGroup = alarmGroup.copy(alarms = updatedAlarms)
+                                    selectedAlarmIndexes.clear()
+                                },
+                                modifier = Modifier
+                                    .size(IconButtonDefaults.extraSmallContainerSize())
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    tint = ErrorLighter
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        IconButton(
+                            onClick = {
+                                isSelectionMode = !isSelectionMode
+                                if (!isSelectionMode) {
+                                    selectedAlarmIndexes.clear()
+                                }
+                            },
+                            modifier = Modifier
+                                .size(IconButtonDefaults.extraSmallContainerSize())
+                        ) {
+                            Icon(
+                                imageVector = if (isSelectionMode) Icons.Default.EditOff else Icons.Default.Edit,
+                                contentDescription = null,
+                                tint = OnTertiaryLight
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(8.dp))
                 }
 
                 itemsIndexed(
-                    items = alarmGroup.alarms.sortedBy {
-                        val time = it.time.split(":")
-                        time[0].toInt() * 60 + time[1].toInt()
-                    },
-                    key = { _, alarm -> "${alarmGroup.alarms.indexOf(alarm)}/${alarm.id}/${alarm.time}" }
+                    items = alarmGroup.alarms
+                        .sortedBy {
+                            val time = it.time.split(":")
+                            time[0].toInt() * 60 + time[1].toInt()
+                        },
+                    key = { index, alarm -> "${index}/${alarm.id}/${alarm.time}" }
                 ) { index, alarm ->
                     if (isSelectionMode) {
                         SelectableEditableAlarmItem(
-                            isChecked = (alarm.id in selectedAlarmIds),
+                            isChecked = (index in selectedAlarmIndexes),
                             alarm = alarm,
                             onAlarmEdit = { editedAlarm ->
                                 val updatedAlarms = alarmGroup.alarms.map { alarm ->
-                                    if (alarm.id == editedAlarm.id) editedAlarm else alarm
+                                    if (alarm.time == editedAlarm.time) editedAlarm else alarm
                                 }
                                 alarmGroup = alarmGroup.copy(
                                     alarms = updatedAlarms
                                 )
                             },
-                            onCheckedChange = { selectedAlarmId ->
-                                if (selectedAlarmId in selectedAlarmIds) {
-                                    selectedAlarmIds.remove(selectedAlarmId)
+                            onCheckedChange = {
+                                if (index in selectedAlarmIndexes) {
+                                    selectedAlarmIndexes.remove(index)
                                 } else {
-                                    selectedAlarmIds.add(selectedAlarmId)
+                                    selectedAlarmIndexes.add(index)
                                 }
                             }
                         )
@@ -219,22 +270,26 @@ fun AddAlarmGroupScreen(
                             alarm = alarm,
                             onAlarmEdit = { editedAlarm ->
                                 val updatedAlarms = alarmGroup.alarms.map { alarm ->
-                                    if (alarm.id == editedAlarm.id) editedAlarm else alarm
+                                    if (alarm.time == editedAlarm.time) editedAlarm else alarm
                                 }
                                 alarmGroup = alarmGroup.copy(
                                     alarms = updatedAlarms
                                 )
-                                viewModel.updateAlarm(editedAlarm)
+                                if (!alarmGroup.isTemp) {
+                                    viewModel.updateAlarm(alarmGroup, editedAlarm)
+                                }
                             },
-                            onAlarmClick = { alarm ->
+                            onAlarmClick = {
                                 showTimeBottomSheet = true
-                                timeBottomSheetData = alarm
+                                timeBottomSheetData = it
                             },
                             onAlarmDelete = { deleteAlarm ->
                                 alarmGroup = alarmGroup.copy(
                                     alarms = alarmGroup.alarms - deleteAlarm
                                 )
-                                viewModel.deleteAlarm(deleteAlarm)
+                                if (!alarmGroup.isTemp) {
+                                    viewModel.deleteAlarm(deleteAlarm)
+                                }
                             },
                         )
                     }
@@ -248,28 +303,26 @@ fun AddAlarmGroupScreen(
                         )
                     }
                 }
+            }
 
-                item {
-                    Button(
-                        enabled = (alarmGroup.title.isNotEmpty() && alarmGroup.description.isNotEmpty()
-                                && alarmGroup.alarms.isNotEmpty() && alarmGroup.repeatDays.isNotEmpty()),
-                        onClick = {
-                            viewModel.saveAlarmGroup(alarmGroup)
-                            onSaveOrSaveTemp()
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = ConstraintLight,
-                            contentColor = OnTertiaryLight
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text(text = stringResource(Res.string.save), fontSize = 18.sp)
-                    }
-                }
+            Button(
+                enabled = (alarmGroup.title.isNotEmpty() && alarmGroup.description.isNotEmpty()
+                        && alarmGroup.alarms.isNotEmpty() && alarmGroup.repeatDays.isNotEmpty()),
+                onClick = {
+                    viewModel.saveAlarmGroup(alarmGroup)
+                    onSaveOrSaveTemp()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ConstraintLight,
+                    contentColor = OnTertiaryLight
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(text = stringResource(Res.string.save), fontSize = 18.sp)
             }
         }
     }
@@ -279,7 +332,6 @@ fun AddAlarmGroupScreen(
 @Composable
 private fun AddAlarmGroupTopBar(
     alarmGroup: AlarmGroupModel,
-    isSelectionMode: Boolean,
     onSaveOrSaveTemp: () -> Unit,
     onSelectionModeChange: (Boolean) -> Unit,
     onAddNewAlarm: (AlarmModel) -> Unit,
@@ -305,22 +357,6 @@ private fun AddAlarmGroupTopBar(
             )
         }
         Spacer(modifier = Modifier.weight(1f))
-
-
-        IconButton(
-            onClick = {
-                onSelectionModeChange(!isSelectionMode)
-            },
-            modifier = Modifier
-                .size(IconButtonDefaults.extraSmallContainerSize())
-        ) {
-            Icon(
-                imageVector = if (isSelectionMode) Icons.Default.EditOff else Icons.Default.Edit,
-                contentDescription = null,
-                tint = OnTertiaryLight
-            )
-        }
-        Spacer(modifier = Modifier.width(24.dp))
 
         if (alarmGroup.id == 0L || alarmGroup.isTemp) {
             IconButton(
@@ -557,21 +593,21 @@ private fun SelectableEditableAlarmItem(
     isChecked: Boolean,
     alarm: AlarmModel,
     onAlarmEdit: (AlarmModel) -> Unit,
-    onCheckedChange: (Long) -> Unit,
+    onCheckedChange: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     SelectionModeItem(
         item = alarm,
         isChecked = isChecked,
-        onCheckedChange = { selectedAlarm, _ ->
-            onCheckedChange(selectedAlarm.id)
+        onCheckedChange = { _, _ ->
+
         },
         modifier = Modifier
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
             ) {
-                onCheckedChange(alarm.id)
+                onCheckedChange()
             }
             .padding(start = 32.dp, end = 24.dp)
     ) {

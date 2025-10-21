@@ -35,7 +35,7 @@ interface AlarmGroupDao {
     fun getTempAlarmGroups(): Flow<List<AlarmGroupEntity>>
 
     @Query("SELECT * FROM alarm_group WHERE id = :id")
-    suspend fun getAlarmGroupById(id: Long): AlarmGroupEntity
+    suspend fun getAlarmGroupById(id: Long): AlarmGroupEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: AlarmGroupEntity): Long

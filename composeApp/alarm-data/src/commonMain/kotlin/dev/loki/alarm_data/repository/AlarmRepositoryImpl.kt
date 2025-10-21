@@ -12,10 +12,13 @@ class AlarmRepositoryImpl(
     private val alarmMapper: AlarmMapper
 ): AlarmRepository {
 
-    override suspend fun upsertAlarm(alarm: Alarm) {
+    override suspend fun upsertAlarm(alarm: Alarm): Alarm {
         val data = alarmMapper.mapToData(alarm)
-        alarmDao.upsert(data)
+        val generatedId = alarmDao.upsert(data)
+        val updatedAlarm = alarmMapper.mapToDomain(data).copy(id = generatedId)
         updateAlarmCount(alarm)
+
+        return updatedAlarm
     }
 
     override suspend fun deleteAlarm(alarm: Alarm) {
@@ -27,6 +30,8 @@ class AlarmRepositoryImpl(
     private suspend fun updateAlarmCount(alarm: Alarm) {
         val count = alarmDao.getAlarmCountByGroup(alarm.groupId)
         val group = alarmGroupDao.getAlarmGroupById(alarm.groupId)
-        alarmGroupDao.update(group.copy(alarmSize = count))
+        group?.copy(alarmSize = count)?.let {
+            alarmGroupDao.update(it)
+        }
     }
 }

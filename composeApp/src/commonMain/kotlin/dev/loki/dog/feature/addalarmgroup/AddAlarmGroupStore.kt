@@ -48,7 +48,7 @@ class AddAlarmGroupStore(
             }
 
             is AddAlarmGroupAction.UpdateAlarm -> {
-                upsertAlarm(action.alarm)
+                upsertAlarm(action.alarmGroup, action.alarm)
             }
 
             is AddAlarmGroupAction.DeleteAlarm -> {
@@ -111,7 +111,7 @@ class AddAlarmGroupStore(
                 )
             }
 
-            domainAlarms.forEach { upsertAlarmUseCase(it) }
+            domainAlarms.forEach { upsertAlarmUseCase(alarmGroup.repeatDays, it) }
         }
     }
 
@@ -126,15 +126,15 @@ class AddAlarmGroupStore(
                 it.copy(groupId = groupId)
             }
 
-            alarmJobs.forEach { upsertAlarmUseCase(it) }
+            alarmJobs.forEach { upsertAlarmUseCase(alarmGroup.repeatDays, it) }
         }
     }
 
-    private fun upsertAlarm(alarm: AlarmModel) {
+    private fun upsertAlarm(alarmGroup: AlarmGroupModel, alarm: AlarmModel) {
         val domainAlarm = alarmMapper.mapToDomain(alarm)
 
         viewModelScope.launch {
-            upsertAlarmUseCase(domainAlarm)
+            upsertAlarmUseCase(alarmGroup.repeatDays, domainAlarm)
         }
     }
 

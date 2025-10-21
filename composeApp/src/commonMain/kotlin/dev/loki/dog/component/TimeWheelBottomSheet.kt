@@ -39,6 +39,7 @@ import dev.loki.dog.theme.PrimaryContainerLight
 import dev.loki.dog.theme.PrimaryLight
 import dev.loki.dog.theme.Seed
 import lokidog.composeapp.generated.resources.Res
+import lokidog.composeapp.generated.resources.confirm
 import lokidog.composeapp.generated.resources.memo
 import org.jetbrains.compose.resources.stringResource
 
@@ -123,7 +124,7 @@ fun TimeWheelBottomSheet(
                         width = 120.dp,
                         height = 48.dp,
                         displayedItemSize = 5,
-                        items = (0..55 step 5).toList(),
+                        items = (0..59).toList(),
                         initialItem = selectedMinute,
                         textStyle = TextStyle(
                             fontSize = 18.sp
@@ -203,7 +204,7 @@ fun TimeWheelBottomSheet(
                     .fillMaxWidth()
                     .padding(horizontal = 32.dp)
             ) {
-                Text(text = "확인", fontSize = 18.sp)
+                Text(text = stringResource(Res.string.confirm), fontSize = 18.sp)
             }
         }
     }
