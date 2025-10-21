@@ -55,7 +55,8 @@ fun AlarmGroupSelectionModeItem(
                 Icon(
                     imageVector = Icons.Default.Menu,
                     contentDescription = null,
-                    tint = OnTertiaryLight
+                    tint = OnTertiaryLight,
+                    modifier = Modifier.padding(start = 8.dp)
                 )
             }
         },
@@ -88,6 +89,6 @@ fun AlarmGroupSelectionModeItem(
             ) {
                 onCheckedChange(alarmGroup, !isChecked)
             }
-            .padding(horizontal = 16.dp)
+            .padding(start = 24.dp, end = 8.dp)
     )
 }

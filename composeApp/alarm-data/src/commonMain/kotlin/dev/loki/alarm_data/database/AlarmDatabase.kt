@@ -7,7 +7,7 @@ import androidx.room.TypeConverters
 import dev.loki.alarm_data.converter.DayOfWeekSetConverter
 import dev.loki.alarm_data.dao.AlarmDao
 import dev.loki.alarm_data.dao.AlarmGroupDao
-import dev.loki.alarm_data.expect.AlarmDatabaseConstructor
+import dev.loki.alarm_data.AlarmDatabaseConstructor
 import dev.loki.alarm_data.model.AlarmEntity
 import dev.loki.alarm_data.model.AlarmGroupEntity
 import kotlinx.coroutines.Dispatchers

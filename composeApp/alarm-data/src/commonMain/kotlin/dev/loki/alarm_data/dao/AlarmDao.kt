@@ -15,7 +15,7 @@ interface AlarmDao {
     suspend fun insert(alarm: AlarmEntity)
 
     @Upsert
-    suspend fun upsert(alarm: AlarmEntity)
+    suspend fun upsert(alarm: AlarmEntity): Long
 
     @Delete
     suspend fun delete(alarm: AlarmEntity)

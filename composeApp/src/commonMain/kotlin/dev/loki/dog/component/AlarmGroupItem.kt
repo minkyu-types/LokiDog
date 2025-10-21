@@ -3,7 +3,7 @@ package dev.loki.dog.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -32,11 +32,13 @@ fun AlarmGroupItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
+            .fillMaxWidth()
             .padding(vertical = 20.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
             modifier = Modifier
+                .weight(1f)
                 .padding(end = 32.dp)
         ) {
             Text(
@@ -44,16 +46,15 @@ fun AlarmGroupItem(
                 fontSize = 24.sp,
                 color = OnTertiaryLight,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
-            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(Res.string.alarms, alarmGroup.alarmSize),
                 fontSize = 16.sp,
                 color = PrimaryContainerLight
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
+
         Switch(
             checked = alarmGroup.isActivated,
             onCheckedChange = {
@@ -62,7 +63,8 @@ fun AlarmGroupItem(
             colors = SwitchDefaults.colors(
                 checkedTrackColor = ConstraintLight,
                 uncheckedTrackColor = InverseOnSurfaceLight
-            )
+            ),
+            modifier = Modifier.padding(start = 8.dp)
         )
     }
 }
