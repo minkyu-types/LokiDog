@@ -34,8 +34,6 @@ actual class AlarmReceiver(): BroadcastReceiver() {
             .setAutoCancel(false)
             .build()
 
-        Logger.e { "수신한 알람: $alarmId, $alarmMemo, $notification" }
-
         notificationManager.notify(alarmId.toInt(), notification)
 
         val ringIntent = Intent(context, AppActivity::class.java).apply {
