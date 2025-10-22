@@ -82,6 +82,7 @@ fun MainScreen(
     val mainScreens = listOf(MainScreen.ALARM, MainScreen.TIMER)
     val showBottomBar = (currentScreen in mainScreens)
 
+    var alarmGroupSize by remember { mutableStateOf(0) }
     var isSelectionMode by remember { mutableStateOf(false) }
     var selectAll by remember { mutableStateOf(false) }
     var deleteSelected by remember { mutableStateOf(false) }
@@ -123,6 +124,7 @@ fun MainScreen(
             if (currentScreen == MainScreen.ALARM) {
                 MainFabMenu(
                     isSelectionMode = isSelectionMode,
+                    allItemsSelected = selectAll,
                     tempAlarmGroupSize = tempAlarmGroupSize,
                     onTempClick = {
                         navController.navigate(SubScreen.ALARM_GROUP_TEMP_LIST.name)
@@ -135,6 +137,7 @@ fun MainScreen(
                     },
                     onActivateSelectionClick = {
                         isSelectionMode = it
+                        selectAll = false
                     },
                     onDeleteSelectedClick = {
                         deleteSelected = true
@@ -168,6 +171,17 @@ fun MainScreen(
                         onDeleteComplete = {
                             deleteSelected = false
                         },
+                        onSelectedItemsChange = { items ->
+                            if (items.isEmpty()) {
+                                selectAll = false
+                            }
+                            if (items.size == alarmGroupSize) {
+                                selectAll = true
+                            }
+                        },
+                        onAlarmGroupUpdate = { items ->
+                            alarmGroupSize = items.size
+                        },
                         onTempSizeUpdate = { size ->
                             tempAlarmGroupSize = size
                         },
@@ -185,7 +199,7 @@ fun MainScreen(
 
                 composable(
                     route = "${SubScreen.ALARM_GROUP_ADD.name}/{groupId}",
-                    arguments = listOf(navArgument("groupId") { type = NavType.LongType})
+                    arguments = listOf(navArgument("groupId") { type = NavType.LongType })
                 ) { backstackEntry ->
                     AddAlarmGroupScreen(
                         groupId = backstackEntry.arguments?.read { getLong("groupId") } ?: 0L,
@@ -216,6 +230,7 @@ fun MainScreen(
 @Composable
 private fun MainFabMenu(
     isSelectionMode: Boolean,
+    allItemsSelected: Boolean,
     tempAlarmGroupSize: Int,
     onTempClick: () -> Unit,
     onAddClick: () -> Unit,
@@ -225,7 +240,6 @@ private fun MainFabMenu(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var checkedAll by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.fillMaxSize(),
@@ -319,12 +333,11 @@ private fun MainFabMenu(
                 FloatingActionButton(
                     onClick = {
                         onSelectAllClick()
-                        checkedAll = !checkedAll
                     },
                     containerColor = PrimaryLight
                 ) {
                     Icon(
-                        imageVector = if (checkedAll) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
+                        imageVector = if (allItemsSelected) Icons.Default.RadioButtonChecked else Icons.Default.RadioButtonUnchecked,
                         contentDescription = "Check or Uncheck alarm group",
                         tint = Color.White
                     )
@@ -369,7 +382,7 @@ fun MainScreen.getTitle(): String {
 @Composable
 fun SubScreen.getTitle(): String {
     return when (this) {
-        SubScreen.ALARM_GROUP_ADD-> stringResource(Res.string.screen_sub_alarm_group_add)
+        SubScreen.ALARM_GROUP_ADD -> stringResource(Res.string.screen_sub_alarm_group_add)
         SubScreen.ALARM_GROUP_TEMP_LIST -> stringResource(Res.string.screen_sub_alarm_group_list_temp)
     }
 }

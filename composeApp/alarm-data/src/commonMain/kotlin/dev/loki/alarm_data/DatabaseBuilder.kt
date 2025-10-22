@@ -1,4 +1,4 @@
-package dev.loki.alarm_data.expect
+package dev.loki.alarm_data
 
 import androidx.room.RoomDatabaseConstructor
 import dev.loki.alarm_data.database.AlarmDatabase
