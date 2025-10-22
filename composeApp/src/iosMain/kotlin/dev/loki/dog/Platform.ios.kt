@@ -18,3 +18,8 @@ actual fun getAlarmDatabaseModule(): Module {
 }
 
 actual fun getRepositoryModule(): List<Module> = alarmRepositoryModule + alarmMapperModule
+actual fun getAlarmScheduler(): Module {
+    return module {
+
+    }
+}
