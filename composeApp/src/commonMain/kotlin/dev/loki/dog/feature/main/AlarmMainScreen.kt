@@ -76,6 +76,8 @@ fun AlarmMainScreen(
     viewModel: AlarmMainViewModel,
     onDeleteComplete: () -> Unit,
     onTempSizeUpdate: (Int) -> Unit,
+    onAlarmGroupUpdate: (List<AlarmGroupModel>) -> Unit,
+    onSelectedItemsChange: (Set<AlarmGroupModel>) -> Unit,
     onAlarmGroupClick: (AlarmGroupModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -105,6 +107,7 @@ fun AlarmMainScreen(
 
     LaunchedEffect(state.alarmGroupList) {
         alarmGroups = state.alarmGroupList
+        onAlarmGroupUpdate(state.alarmGroupList)
     }
 
     LaunchedEffect(selectAll) {
@@ -201,6 +204,7 @@ fun AlarmMainScreen(
                             } else {
                                 selectedItems.remove(group)
                             }
+                            onSelectedItemsChange(selectedItems)
                         },
                         dragController = object : DraggableItem {
                             override fun onDragStart(index: Int) {
