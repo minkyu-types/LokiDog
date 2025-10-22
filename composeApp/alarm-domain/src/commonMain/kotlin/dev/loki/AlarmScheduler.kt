@@ -6,4 +6,5 @@ import kotlinx.datetime.DayOfWeek
 interface AlarmScheduler {
     suspend fun schedule(repeatDays: Set<DayOfWeek>, alarm: Alarm)
     suspend fun cancel(repeatDays: Set<DayOfWeek>, alarm: Alarm)
+    suspend fun cancelByGroup(groupId: Long)
 }

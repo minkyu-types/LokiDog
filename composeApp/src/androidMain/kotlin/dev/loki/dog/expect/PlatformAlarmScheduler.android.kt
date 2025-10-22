@@ -65,6 +65,10 @@ actual class PlatformAlarmScheduler(
         alarmManager.cancel(pendingIntent)
     }
 
+    override suspend fun cancelByGroup(groupId: Long) {
+        TODO("Not yet implemented")
+    }
+
     private fun requestExactAlarmPermission(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val intent = Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
