@@ -11,12 +11,25 @@ data class AlarmModel(
     val isTemp: Boolean,
 ) {
     companion object {
-        fun createTemp(groupId: Long, prevAlarms: List<AlarmModel>): AlarmModel {
-            var newTime = TempAlarmTimeGenerator.nextTime()
-            val prevTimes = prevAlarms.map { it.time }
+        fun createTemp(groupId: Long, latestAlarm: AlarmModel?): AlarmModel {
+            if (latestAlarm == null) {
+                return AlarmModel(
+                    id = 0,
+                    groupId = groupId,
+                    time = "00:05",
+                    memo = "",
+                    isActivated = true,
+                    isTemp = true,
+                )
+            }
+
+            val prevTimes = latestAlarm.time
+            val (latestHour,latestMinute)=  prevTimes.split(":").map { it.toInt() }
+            var newTime = TempAlarmTimeGenerator.nextTime(latestHour, latestMinute)
 
             while (newTime in prevTimes) {
-                newTime = TempAlarmTimeGenerator.nextTime()
+                val (hour, minute) = newTime.split(":").map { it.toInt() }
+                newTime = TempAlarmTimeGenerator.nextTime(hour, minute)
             }
 
             return AlarmModel(

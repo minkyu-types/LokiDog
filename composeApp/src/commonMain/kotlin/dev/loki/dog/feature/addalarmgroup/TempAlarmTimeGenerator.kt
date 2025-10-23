@@ -4,7 +4,10 @@ object TempAlarmTimeGenerator {
     private var currHour = 0
     private var currMinute = 0
 
-    fun nextTime(): String {
+    fun nextTime(hour: Int, minute: Int): String {
+        currHour = hour
+        currMinute = minute
+
         currMinute += 5
 
         if (currMinute >= 60) {
