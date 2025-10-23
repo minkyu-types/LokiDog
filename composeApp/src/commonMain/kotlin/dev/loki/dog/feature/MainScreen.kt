@@ -29,11 +29,14 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +61,7 @@ import dev.loki.dog.theme.OnPrimaryContainerLight
 import dev.loki.dog.theme.OnTertiaryLight
 import dev.loki.dog.theme.PrimaryLight
 import dev.loki.dog.theme.Seed
+import kotlinx.coroutines.launch
 import lokidog.composeapp.generated.resources.Res
 import lokidog.composeapp.generated.resources.bottom_bar_alarm_group_list
 import lokidog.composeapp.generated.resources.bottom_bar_alarm_timer
@@ -87,9 +91,14 @@ fun MainScreen(
     var selectAll by remember { mutableStateOf(false) }
     var deleteSelected by remember { mutableStateOf(false) }
     var tempAlarmGroupSize by remember { mutableStateOf(0) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar(
@@ -206,6 +215,11 @@ fun MainScreen(
                         onSaveOrSaveTemp = {
                             TempAlarmTimeGenerator.reset()
                             navController.popBackStack()
+                        },
+                        onError = { message ->
+                            scope.launch {
+                                snackbarHostState.showSnackbar(message)
+                            }
                         }
                     )
                 }
