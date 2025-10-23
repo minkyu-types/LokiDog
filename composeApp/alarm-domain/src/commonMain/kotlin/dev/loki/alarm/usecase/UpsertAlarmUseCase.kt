@@ -11,7 +11,6 @@ class UpsertAlarmUseCase(
 ) {
 
     suspend operator fun invoke(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
-        val result = repository.upsertAlarm(alarm)
-        alarmScheduler.schedule(repeatDays, alarm.copy(id = result.id))
+        repository.upsertAlarm(alarm)
     }
 }

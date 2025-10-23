@@ -11,6 +11,18 @@ class AlarmRepositoryImpl(
     private val alarmGroupDao: AlarmGroupDao,
     private val alarmMapper: AlarmMapper
 ): AlarmRepository {
+    override suspend fun getAlarmById(id: Long): Alarm? {
+        return alarmDao.getAlarmById(id)?.let {
+            alarmMapper.mapToDomain(it)
+        }
+    }
+
+    override suspend fun getAlarmsByGroupId(groupId: Long): List<Alarm> {
+        return alarmDao.getAlarmsByGroupId(groupId)
+            .map {
+                alarmMapper.mapToDomain(it)
+            }
+    }
 
     override suspend fun upsertAlarm(alarm: Alarm): Alarm {
         val data = alarmMapper.mapToData(alarm)

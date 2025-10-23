@@ -2,9 +2,14 @@ package dev.loki.dog.feature.addalarmgroup
 
 import dev.loki.DomainResult
 import dev.loki.alarm.usecase.DeleteAlarmUseCase
+import dev.loki.alarm.usecase.GetAlarmByIdUseCase
+import dev.loki.alarm.usecase.GetAlarmsByGroupIdUseCase
+import dev.loki.alarm.usecase.RescheduleAlarmUseCase
 import dev.loki.alarm.usecase.UpsertAlarmUseCase
+import dev.loki.alarmgroup.usecase.GetAlarmGroupById
 import dev.loki.alarmgroup.usecase.GetAlarmGroupWithAlarmsUseCase
-import dev.loki.alarmgroup.usecase.UpsertAlarmGroupUseCase
+import dev.loki.alarmgroup.usecase.InsertAlarmGroupUseCase
+import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
 import dev.loki.dog.feature.base.BaseAction
 import dev.loki.dog.feature.base.BaseStore
 import dev.loki.dog.feature.base.LoadState
@@ -14,6 +19,7 @@ import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.model.AlarmModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.DayOfWeek
 import org.koin.core.component.inject
 import org.koin.core.scope.Scope
 
@@ -26,10 +32,15 @@ class AddAlarmGroupStore(
     initialState = AddAlarmGroupState()
 ) {
     private val getAlarmGroupWithAlarmsUseCase: GetAlarmGroupWithAlarmsUseCase by inject()
-    private val upsertAlarmGroupUseCase: UpsertAlarmGroupUseCase by inject()
+    private val getAlarmGroupById: GetAlarmGroupById by inject()
+    private val insertAlarmGroupUseCase: InsertAlarmGroupUseCase by inject()
+    private val updateAlarmGroupUseCase: UpdateAlarmGroupUseCase by inject()
     private val alarmMapper: AlarmMapper by inject()
     private val alarmGroupMapper: AlarmGroupMapper by inject()
 
+    private val getAlarmByIdUseCase: GetAlarmByIdUseCase by inject()
+    private val getAlarmsByGroupIdUseCase: GetAlarmsByGroupIdUseCase by inject()
+    private val rescheduleAlarmUseCase: RescheduleAlarmUseCase by inject()
     private val upsertAlarmUseCase: UpsertAlarmUseCase by inject()
     private val deleteAlarmUseCase: DeleteAlarmUseCase by inject()
 
@@ -39,12 +50,30 @@ class AddAlarmGroupStore(
                 getAlarmGroupWithAlarms(action.id)
             }
 
-            is AddAlarmGroupAction.Save -> {
-                saveAlarmGroup(action.alarmGroup)
+            is AddAlarmGroupAction.SaveAlarmGroup -> {
+                viewModelScope.launch {
+                    if (action.alarmGroup.id == 0L) {
+                        val group = saveAlarmGroup(action.alarmGroup)
+                        action.alarms.forEach {
+                            upsertAlarm(group, it)
+                        }
+                    } else {
+                        updateAlarmGroup(action.alarmGroup)
+                        action.alarms.forEach {
+                            upsertAlarm(action.alarmGroup, it)
+                        }
+                    }
+                }
             }
 
-            is AddAlarmGroupAction.SaveTemp -> {
-                saveTempAlarmGroup(action.alarmGroup)
+            is AddAlarmGroupAction.SaveTempAlarmGroup -> {
+                viewModelScope.launch {
+                    val group = saveTempAlarmGroup(action.alarmGroup)
+                    action.alarms.forEach {
+                        val alarm = alarmMapper.mapToDomain(it)
+                        upsertAlarmUseCase(group.repeatDays, alarm)
+                    }
+                }
             }
 
             is AddAlarmGroupAction.UpdateAlarm -> {
@@ -58,7 +87,8 @@ class AddAlarmGroupStore(
             is AddAlarmGroupAction.GetTempAlarmGroup -> {
                 setState {
                     copy(
-                        tempAlarmGroup = AlarmGroupModel.createTemp()
+                        alarmGroup = AlarmGroupModel.createTemp(),
+                        alarms = emptyList()
                     )
                 }
             }
@@ -77,9 +107,8 @@ class AddAlarmGroupStore(
 
                         setState {
                             copy(
-                                tempAlarmGroup = alarmGroup.copy(
-                                    alarms = alarms
-                                )
+                                alarmGroup = alarmGroup,
+                                alarms = alarms
                             )
                         }
                     }
@@ -98,43 +127,78 @@ class AddAlarmGroupStore(
         }
     }
 
-    private fun saveAlarmGroup(alarmGroup: AlarmGroupModel) {
+    /**
+     * 저장
+     * - 최초 1회
+     * - 임시저장된 알람 그룹을 isTemp를 false로 설정하고 저장
+     */
+    private suspend fun saveAlarmGroup(alarmGroup: AlarmGroupModel): AlarmGroupModel {
         val domainAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup).copy(isTemp = false)
-
-        viewModelScope.launch {
-            val groupId = upsertAlarmGroupUseCase(domainAlarmGroup)
-
-            val domainAlarms = alarmGroup.alarms.map {
-                alarmMapper.mapToDomain(it).copy(
-                    groupId = groupId,
-                    isTemp = false
-                )
-            }
-
-            domainAlarms.forEach { upsertAlarmUseCase(alarmGroup.repeatDays, it) }
-        }
+        val groupId = insertAlarmGroupUseCase(domainAlarmGroup)
+        return alarmGroup.copy(id = groupId)
     }
 
-    private fun saveTempAlarmGroup(alarmGroup: AlarmGroupModel) {
+    // 임시 저장
+    private suspend fun saveTempAlarmGroup(alarmGroup: AlarmGroupModel): AlarmGroupModel {
         val domainTempAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup).copy(isTemp = true)
-        val domainAlarms = alarmGroup.alarms.map { alarmMapper.mapToDomain(it).copy(isTemp = true) }
+        val groupId = insertAlarmGroupUseCase(domainTempAlarmGroup)
+        return alarmGroup.copy(id = groupId)
+    }
 
-        viewModelScope.launch {
-            val groupId = upsertAlarmGroupUseCase(domainTempAlarmGroup)
+    private suspend fun updateAlarmGroup(
+        alarmGroup: AlarmGroupModel,
+    ) {
+        val prevData = getAlarmGroupById(alarmGroup.id) ?: return
+        val domainAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup)
+        updateAlarmGroupUseCase(domainAlarmGroup)
 
-            val alarmJobs = domainAlarms.map {
-                it.copy(groupId = groupId)
-            }
-
-            alarmJobs.forEach { upsertAlarmUseCase(alarmGroup.repeatDays, it) }
+        if (
+            prevData.repeatDays != domainAlarmGroup.repeatDays ||
+            prevData.isActivated != domainAlarmGroup.isActivated
+        ) {
+            rescheduleAlarms(
+                groupId = domainAlarmGroup.id,
+                isActivated = domainAlarmGroup.isActivated,
+                repeatDays = domainAlarmGroup.repeatDays,
+            )
         }
     }
 
+    /**
+     * 그룹에 포함된 모든 알람 reschedule
+     */
+    private suspend fun rescheduleAlarms(groupId: Long, isActivated: Boolean, repeatDays: Set<DayOfWeek>) {
+        val alarms = getAlarmsByGroupIdUseCase(groupId)
+
+        alarms.forEach { alarm ->
+            rescheduleAlarmUseCase(isActivated, repeatDays, alarm)
+        }
+    }
+
+    private suspend fun rescheduleAlarm(isActivated: Boolean, repeatDays: Set<DayOfWeek>, alarm: AlarmModel) {
+        val domainAlarm = alarmMapper.mapToDomain(alarm)
+        rescheduleAlarmUseCase(isActivated, repeatDays, domainAlarm)
+    }
+
+    /**
+     * 해당 알람 reschedule 포함
+     */
     private fun upsertAlarm(alarmGroup: AlarmGroupModel, alarm: AlarmModel) {
         val domainAlarm = alarmMapper.mapToDomain(alarm)
 
         viewModelScope.launch {
+            val prevAlarmData = getAlarmByIdUseCase(alarm.id)
             upsertAlarmUseCase(alarmGroup.repeatDays, domainAlarm)
+            if (prevAlarmData != null) {
+                if (
+                    prevAlarmData.time != domainAlarm.time ||
+                    prevAlarmData.isActivated != domainAlarm.isActivated
+                ) {
+                    rescheduleAlarm(domainAlarm.isActivated, alarmGroup.repeatDays, alarm)
+                }
+            } else {
+                rescheduleAlarm(domainAlarm.isActivated, alarmGroup.repeatDays, alarm)
+            }
         }
     }
 

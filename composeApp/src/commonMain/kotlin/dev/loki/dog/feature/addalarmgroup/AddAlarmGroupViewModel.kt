@@ -3,6 +3,7 @@ package dev.loki.dog.feature.addalarmgroup
 import dev.loki.dog.feature.base.BaseSharedViewModel
 import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.model.AlarmModel
+import kotlinx.datetime.DayOfWeek
 
 class AddAlarmGroupViewModel(
     factory: AddAlarmGroupStoreFactory
@@ -14,15 +15,19 @@ class AddAlarmGroupViewModel(
         dispatch(AddAlarmGroupAction.GetAlarmGroup(id))
     }
 
-    fun saveAlarmGroup(alarmGroup: AlarmGroupModel) {
-        dispatch(AddAlarmGroupAction.Save(alarmGroup))
+    fun rescheduleAlarm(isActivated: Boolean, repeatDays: Set<DayOfWeek>, alarms: List<AlarmModel>) {
+        dispatch(AddAlarmGroupAction.Reschedule(repeatDays, alarms))
     }
 
-    fun saveTempAlarmGroup(alarmGroup: AlarmGroupModel) {
-        dispatch(AddAlarmGroupAction.SaveTemp(alarmGroup))
+    fun saveAlarmGroup(alarmGroup: AlarmGroupModel, alarms: List<AlarmModel>) {
+        dispatch(AddAlarmGroupAction.SaveAlarmGroup(alarmGroup, alarms))
     }
 
-    fun updateAlarm(alarmGroup: AlarmGroupModel, alarm: AlarmModel) {
+    fun saveTempAlarmGroup(alarmGroup: AlarmGroupModel, alarms: List<AlarmModel>) {
+        dispatch(AddAlarmGroupAction.SaveTempAlarmGroup(alarmGroup, alarms))
+    }
+
+    fun upsertAlarm(alarmGroup: AlarmGroupModel, alarm: AlarmModel) {
         dispatch(AddAlarmGroupAction.UpdateAlarm(alarmGroup, alarm))
     }
 

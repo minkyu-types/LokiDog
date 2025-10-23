@@ -51,15 +51,6 @@ class AlarmGroupRepositoryImpl(
         return alarmGroupDao.insert(data)
     }
 
-    override suspend fun upsertAlarmGroup(alarmGroup: AlarmGroup): Long {
-        val currTime = Clock.System.now().toEpochMilliseconds()
-        val data = alarmGroupMapper.mapToData(
-            if (alarmGroup.id == 0L) alarmGroup.copy(created = currTime, updated = currTime)
-                    else alarmGroup.copy(updated = currTime)
-        )
-        return alarmGroupDao.insert(data)
-    }
-
     override suspend fun updateAlarmGroup(alarmGroup: AlarmGroup) {
         val currTime = Clock.System.now().toEpochMilliseconds()
         val data = alarmGroupMapper.mapToData(
@@ -87,5 +78,13 @@ class AlarmGroupRepositoryImpl(
                     alarmGroupMapper.mapToDomain(group)
                 }
             }
+    }
+
+    override suspend fun getAlarmGroupById(id: Long): AlarmGroup? {
+        val data = alarmGroupDao.getAlarmGroupById(id)
+        val domain = data?.let {
+            alarmGroupMapper.mapToDomain(it)
+        }
+        return domain
     }
 }
