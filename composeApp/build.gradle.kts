@@ -1,4 +1,5 @@
 import org.jetbrains.compose.ExperimentalComposeLibrary
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
@@ -17,6 +18,9 @@ kotlin {
     val xcf = XCFramework()
 
     androidTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
         //https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
@@ -29,7 +33,7 @@ kotlin {
         it.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-            export(libs.androidx.lifecycle.viewmodel)
+            export(libs.lifecycle.viewmodel)
             xcf.add(this)
         }
     }
@@ -38,7 +42,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":composeApp:alarm-domain"))
 
-            api(libs.androidx.lifecycle.viewmodel)
+            api(libs.lifecycle.viewmodel)
             implementation(compose.runtime)
             implementation(compose.ui)
             implementation(compose.foundation)
@@ -65,7 +69,6 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.multiplatformSettings)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.kstore)
             implementation(libs.materialKolor)
         }
 
@@ -83,7 +86,6 @@ kotlin {
             implementation(libs.androidx.activityCompose)
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.kstore.file)
             implementation(libs.koin.android)
             implementation(libs.androidx.paging3.runtime)
             implementation(libs.androidx.lifecycle.runtime)
@@ -93,7 +95,7 @@ kotlin {
             implementation(project(":composeApp:alarm-data"))
 
             implementation(libs.ktor.client.darwin)
-            implementation(libs.kstore.file)
+//            implementation(libs.kstore.file)
         }
 
     }
