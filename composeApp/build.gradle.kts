@@ -64,7 +64,7 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
-            implementation(libs.koin.compose)
+            implementation(libs.koin.annotations)
             implementation(libs.coil)
             implementation(libs.coil.network.ktor)
             implementation(libs.multiplatformSettings)
@@ -121,6 +121,7 @@ android {
 dependencies {
     androidTestImplementation(libs.androidx.uitest.junit4)
     debugImplementation(libs.androidx.uitest.testManifest)
+    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
 }
 
 buildConfig {
