@@ -12,6 +12,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
 
+                implementation(libs.kermit)
                 implementation(libs.koin.core)
                 implementation(libs.koin.annotations)
                 implementation(libs.kotlinx.coroutines.core)
