@@ -49,7 +49,10 @@ fun AlarmGroupSelectionModeItem(
                         .weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AlarmGroupItem(alarmGroup = alarmGroup)
+                    AlarmGroupItem(
+                        alarmGroup = alarmGroup,
+                        switchEnabled = false
+                    )
                 }
 
                 Icon(
