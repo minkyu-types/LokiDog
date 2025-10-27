@@ -2,7 +2,6 @@ package dev.loki.dog.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
@@ -64,7 +63,8 @@ fun AlarmGroupItem(
             },
             colors = SwitchDefaults.colors(
                 checkedTrackColor = ConstraintLight,
-                uncheckedTrackColor = InverseOnSurfaceLight
+                uncheckedTrackColor = InverseOnSurfaceLight,
+                disabledCheckedTrackColor = ConstraintLight,
             ),
             modifier = Modifier.padding(start = 8.dp)
         )
