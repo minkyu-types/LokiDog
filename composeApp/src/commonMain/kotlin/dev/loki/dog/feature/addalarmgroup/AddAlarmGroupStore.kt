@@ -20,6 +20,7 @@ import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.model.AlarmModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import org.koin.core.component.inject
@@ -33,6 +34,7 @@ class AddAlarmGroupStore(
     scope = scope,
     initialState = AddAlarmGroupState()
 ) {
+    private var getAlarmGroupJob: Job? = null
     private val getAlarmGroupWithAlarmsUseCase: GetAlarmGroupWithAlarmsUseCase by inject()
     private val getAlarmGroupById: GetAlarmGroupById by inject()
     private val insertAlarmGroupUseCase: InsertAlarmGroupUseCase by inject()
@@ -59,9 +61,15 @@ class AddAlarmGroupStore(
 
             is AddAlarmGroupAction.SaveAlarmGroup -> {
                 viewModelScope.launch(exceptionHandler) {
-                    val group = saveAlarmGroup(action.alarmGroup)
-                    action.alarms.forEach {
-                        upsertAlarm(action.alarmGroup, it.copy(groupId = group.id))
+                    if (action.alarmGroup.id == 0L || action.alarmGroup.isTemp) {
+                        // 신규 또는 임시 그룹 -> insert
+                        val group = saveAlarmGroup(action.alarmGroup)
+                        action.alarms.forEach {
+                            upsertAlarm(action.alarmGroup, it.copy(groupId = group.id))
+                        }
+                    } else {
+                        // 기존 그룹 -> update
+                        updateAlarmGroup(action.alarmGroup)
                     }
                 }
             }
@@ -69,14 +77,10 @@ class AddAlarmGroupStore(
             is AddAlarmGroupAction.SaveTempAlarmGroup -> {
                 viewModelScope.launch {
                     val group = saveTempAlarmGroup(action.alarmGroup)
-                    Logger.e { "QQQQ SaveTempAlarmGroup: $group" }
-                    Logger.e { "->" }
                     action.alarms.forEach {
                         val alarm = alarmMapper.mapToDomain(it)
                         upsertAlarmUseCase(group.repeatDays, alarm.copy(groupId = group.id))
-                        Logger.e { "QQQQ Save Alarm: $alarm" }
                     }
-                    Logger.e { "===============================" }
                 }
             }
 
@@ -100,20 +104,25 @@ class AddAlarmGroupStore(
     }
 
     private fun getAlarmGroupWithAlarms(groupId: Long) {
-        viewModelScope.launch {
+        getAlarmGroupJob?.cancel()
+
+        getAlarmGroupJob = viewModelScope.launch {
             getAlarmGroupWithAlarmsUseCase(groupId).collect { domainResult ->
                 when (domainResult) {
                     is DomainResult.Success -> {
-                        val alarmGroup = alarmGroupMapper.mapToPresentation(domainResult.data.group)
-                        val alarms = domainResult.data.alarms.map {
-                            alarmMapper.mapToPresentation(it)
-                        }
+                        // groupId가 현재 요청한 것과 일치하는지 확인
+                        if (domainResult.data.group.id == groupId) {
+                            val alarmGroup = alarmGroupMapper.mapToPresentation(domainResult.data.group)
+                            val alarms = domainResult.data.alarms.map {
+                                alarmMapper.mapToPresentation(it)
+                            }
 
-                        setState {
-                            copy(
-                                alarmGroup = alarmGroup,
-                                alarms = alarms
-                            )
+                            setState {
+                                copy(
+                                    alarmGroup = alarmGroup,
+                                    alarms = alarms
+                                )
+                            }
                         }
                     }
 
