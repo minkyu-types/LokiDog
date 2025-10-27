@@ -205,7 +205,6 @@ fun AlarmMainScreen(
                                 selectedItems.remove(group)
                             }
                             onSelectedItemsChange(selectedItems)
-                            viewModel.updateAlarmGroup(item.copy(isActivated = isChecked))
                         },
                         dragController = object : DraggableItem {
                             override fun onDragStart(index: Int) {
