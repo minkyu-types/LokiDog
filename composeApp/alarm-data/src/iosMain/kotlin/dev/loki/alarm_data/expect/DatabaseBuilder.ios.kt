@@ -2,8 +2,11 @@ package dev.loki.alarm_data.expect
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import dev.loki.alarm_data.database.AlarmDatabase
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
@@ -12,7 +15,8 @@ fun getAlarmDatabaseBuilder(): RoomDatabase.Builder<AlarmDatabase> {
     val dbFilePath = documentDirectory() + "/alarm.db"
     return Room.databaseBuilder<AlarmDatabase>(
         name = dbFilePath,
-    )
+    ).setDriver(BundledSQLiteDriver())
+        .setQueryCoroutineContext(Dispatchers.IO)
 }
 
 @OptIn(ExperimentalForeignApi::class)

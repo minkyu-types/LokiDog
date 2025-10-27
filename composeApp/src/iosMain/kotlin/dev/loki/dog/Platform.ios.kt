@@ -1,6 +1,7 @@
 package dev.loki.dog
 
 import dev.loki.AlarmScheduler
+import dev.loki.alarm_data.database.AlarmDatabase
 import dev.loki.alarm_data.database.getAlarmDatabase
 import dev.loki.alarm_data.di.alarmMapperModule
 import dev.loki.alarm_data.di.alarmRepositoryModule
@@ -16,6 +17,8 @@ actual fun getAlarmDatabaseModule(): Module {
                 getAlarmDatabaseBuilder()
             )
         }
+        single { get<AlarmDatabase>().getAlarmDao() }
+        single { get<AlarmDatabase>().getAlarmGroupDao() }
     }
 }
 
