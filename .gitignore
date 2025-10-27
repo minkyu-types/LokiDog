@@ -22,3 +22,4 @@ Pods/
 /iosApp/iosApp/Preview Content/Preview Assets.xcassets/Contents.json
 /iosApp/iosApp/Info.plist
 /gradle.properties
+/iosApp/composeApp.xcframework/*

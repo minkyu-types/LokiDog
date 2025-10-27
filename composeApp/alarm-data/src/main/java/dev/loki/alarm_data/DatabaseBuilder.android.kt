@@ -1,4 +1,4 @@
-package dev.loki.alarm_data.expect
+package dev.loki.alarm_data
 
 import android.content.Context
 import androidx.room.Room

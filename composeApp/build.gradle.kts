@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.orbit.compose)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.androidx.room.runtime)
+            implementation("androidx.sqlite:sqlite-bundled:2.6.1")
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
             implementation(libs.koin.annotations)
