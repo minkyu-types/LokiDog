@@ -336,7 +336,7 @@ fun AddAlarmGroupScreen(
                 Button(
                     enabled = (alarmGroup.title.isNotEmpty() && alarms.isNotEmpty() && alarmGroup.repeatDays.isNotEmpty()),
                     onClick = {
-                        viewModel.saveTempAlarmGroup(alarmGroup, alarms)
+                        viewModel.saveAlarmGroup(alarmGroup, alarms)
                         onSaveOrSaveTemp()
                     },
                     colors = ButtonDefaults.buttonColors(

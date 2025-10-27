@@ -1,5 +1,6 @@
 package dev.loki.dog.feature.addalarmgroup
 
+import co.touchlab.kermit.Logger
 import dev.loki.DomainResult
 import dev.loki.alarm.usecase.DeleteAlarmUseCase
 import dev.loki.alarm.usecase.GetAlarmByIdUseCase
@@ -17,6 +18,7 @@ import dev.loki.dog.mapper.AlarmGroupMapper
 import dev.loki.dog.mapper.AlarmMapper
 import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.model.AlarmModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
@@ -44,6 +46,11 @@ class AddAlarmGroupStore(
     private val upsertAlarmUseCase: UpsertAlarmUseCase by inject()
     private val deleteAlarmUseCase: DeleteAlarmUseCase by inject()
 
+    private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
+        println("예외 발생: ${exception.message}")
+        exception.printStackTrace()
+    }
+
     override fun dispatch(action: BaseAction) {
         when (action) {
             is AddAlarmGroupAction.GetAlarmGroup -> {
@@ -51,17 +58,10 @@ class AddAlarmGroupStore(
             }
 
             is AddAlarmGroupAction.SaveAlarmGroup -> {
-                viewModelScope.launch {
-                    if (action.alarmGroup.id == 0L) {
-                        val group = saveAlarmGroup(action.alarmGroup)
-                        action.alarms.forEach {
-                            upsertAlarm(group, it)
-                        }
-                    } else {
-                        updateAlarmGroup(action.alarmGroup)
-                        action.alarms.forEach {
-                            upsertAlarm(action.alarmGroup, it)
-                        }
+                viewModelScope.launch(exceptionHandler) {
+                    val group = saveAlarmGroup(action.alarmGroup)
+                    action.alarms.forEach {
+                        upsertAlarm(action.alarmGroup, it.copy(groupId = group.id))
                     }
                 }
             }
@@ -69,10 +69,14 @@ class AddAlarmGroupStore(
             is AddAlarmGroupAction.SaveTempAlarmGroup -> {
                 viewModelScope.launch {
                     val group = saveTempAlarmGroup(action.alarmGroup)
+                    Logger.e { "QQQQ SaveTempAlarmGroup: $group" }
+                    Logger.e { "->" }
                     action.alarms.forEach {
                         val alarm = alarmMapper.mapToDomain(it)
-                        upsertAlarmUseCase(group.repeatDays, alarm)
+                        upsertAlarmUseCase(group.repeatDays, alarm.copy(groupId = group.id))
+                        Logger.e { "QQQQ Save Alarm: $alarm" }
                     }
+                    Logger.e { "===============================" }
                 }
             }
 

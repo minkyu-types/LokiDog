@@ -24,7 +24,7 @@ val alarmUseCaseModule = module {
     single { DeleteAlarmUseCase(get(), get()) }
 
     single { GetAlarmGroupById(get()) }
-    single { InsertAlarmGroupUseCase(get(), get()) }
+    single { InsertAlarmGroupUseCase(get()) }
     single { DeleteAlarmGroupUseCase(get()) }
     single { DeleteSelectedAlarmGroupsUseCase(get()) }
     single { RescheduleAllAlarmsOnBootUseCase(get(), get()) }
