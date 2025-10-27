@@ -37,6 +37,7 @@ fun AlarmGroupSwipeToDeleteItem(
             ) {
                 AlarmGroupItem(
                     alarmGroup = alarmGroup,
+                    switchEnabled = true,
                     onActivationChange = {
                         onActivationChange?.invoke(it)
                     },

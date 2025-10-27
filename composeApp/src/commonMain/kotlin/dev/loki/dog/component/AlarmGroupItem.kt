@@ -26,6 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun AlarmGroupItem(
     alarmGroup: AlarmGroupModel,
+    switchEnabled: Boolean,
     onActivationChange: ((AlarmGroupModel) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -56,6 +57,7 @@ fun AlarmGroupItem(
         }
 
         Switch(
+            enabled = switchEnabled,
             checked = alarmGroup.isActivated,
             onCheckedChange = {
                 onActivationChange?.invoke(alarmGroup.copy(isActivated = it))
