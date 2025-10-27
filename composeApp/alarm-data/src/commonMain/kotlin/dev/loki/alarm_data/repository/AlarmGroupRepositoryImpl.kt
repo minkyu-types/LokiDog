@@ -7,8 +7,12 @@ import dev.loki.alarmgroup.model.AlarmGroup
 import dev.loki.alarmgroup.model.AlarmGroupWithAlarms
 import dev.loki.alarmgroup.model.AlarmMainSort
 import dev.loki.alarmgroup.repository.AlarmGroupRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -26,7 +30,7 @@ class AlarmGroupRepositoryImpl(
                     alarmMapper.mapToDomain(alarm)
                 }
             )
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override fun getAlarmGroups(sort: AlarmMainSort): Flow<List<AlarmGroup>> {
@@ -40,7 +44,7 @@ class AlarmGroupRepositoryImpl(
             groups.map { group ->
                 alarmGroupMapper.mapToDomain(group)
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun createAlarmGroup(alarmGroup: AlarmGroup): Long {
@@ -48,7 +52,9 @@ class AlarmGroupRepositoryImpl(
         val data = alarmGroupMapper.mapToData(
             alarmGroup.copy(created = currTime, updated = currTime)
         )
-        return alarmGroupDao.insert(data)
+        return withContext(Dispatchers.IO) {
+            alarmGroupDao.insert(data)
+        }
     }
 
     override suspend fun updateAlarmGroup(alarmGroup: AlarmGroup) {
@@ -56,19 +62,25 @@ class AlarmGroupRepositoryImpl(
         val data = alarmGroupMapper.mapToData(
             alarmGroup.copy(updated = currTime)
         )
-        alarmGroupDao.update(data)
+        withContext(Dispatchers.IO) {
+            alarmGroupDao.update(data)
+        }
     }
 
     override suspend fun deleteAlarmGroup(alarmGroup: AlarmGroup) {
         val data = alarmGroupMapper.mapToData(alarmGroup)
-        alarmGroupDao.delete(data)
+        withContext(Dispatchers.IO) {
+            alarmGroupDao.delete(data)
+        }
     }
 
     override suspend fun deleteSelectedAlarmGroups(alarmGroups: List<AlarmGroup>) {
         val data = alarmGroups.map { group ->
             group.id
         }
-        alarmGroupDao.deleteSelectedAlarmGroups(data)
+        withContext(Dispatchers.IO) {
+            alarmGroupDao.deleteSelectedAlarmGroups(data)
+        }
     }
 
     override fun getTempAlarmGroups(): Flow<List<AlarmGroup>> {
@@ -77,11 +89,13 @@ class AlarmGroupRepositoryImpl(
                 groups.map { group ->
                     alarmGroupMapper.mapToDomain(group)
                 }
-            }
+            }.flowOn(Dispatchers.IO)
     }
 
     override suspend fun getAlarmGroupById(id: Long): AlarmGroup? {
-        val data = alarmGroupDao.getAlarmGroupById(id)
+        val data = withContext(Dispatchers.IO) {
+            alarmGroupDao.getAlarmGroupById(id)
+        }
         val domain = data?.let {
             alarmGroupMapper.mapToDomain(it)
         }
