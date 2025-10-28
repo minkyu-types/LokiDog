@@ -20,7 +20,7 @@
 - Coroutines `1.10.3`
 - Kotlinx serialization, datetime
 - Kermit `2.0.4`
-- Ai assistant(Chat GPT 5 + Copilot)
+- Ai assistant(Claude CLI + Copilot)
 
 ## 주요 기능
 - 알람 관리
