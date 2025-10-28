@@ -33,7 +33,7 @@ fun AlarmGroupItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 20.dp)
+            .padding(vertical = 16.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
@@ -43,7 +43,7 @@ fun AlarmGroupItem(
         ) {
             Text(
                 text = alarmGroup.title,
-                fontSize = 24.sp,
+                fontSize = 20.sp,
                 color = OnTertiaryLight,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

@@ -147,7 +147,7 @@ fun TimeWheelBottomSheet(
             ) {
                 Text(
                     text = stringResource(Res.string.memo),
-                    fontSize = 22.sp,
+                    fontSize = 18.sp,
                     color = OnTertiaryLight,
                     modifier = Modifier
                         .padding(start = 8.dp)
@@ -160,12 +160,12 @@ fun TimeWheelBottomSheet(
                     },
                     singleLine = true,
                     textStyle = TextStyle(
-                        fontSize = 20.sp
+                        fontSize = 16.sp
                     ),
                     placeholder = {
                         Text(
                             text = "Purpose of this memo",
-                            fontSize = 22.sp,
+                            fontSize = 16.sp,
                             color = OutlineLight
                         )
                     },
@@ -202,6 +202,7 @@ fun TimeWheelBottomSheet(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(56.dp)
                     .padding(horizontal = 32.dp)
             ) {
                 Text(text = stringResource(Res.string.confirm), fontSize = 18.sp)

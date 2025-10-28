@@ -321,10 +321,10 @@ private fun AlarmGroupTopBar(
         ) {
             Text(
                 text = currentSort.getLabel(),
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 color = OnTertiaryLight,
                 modifier = modifier
-                    .padding(vertical = 4.dp)
+                    .padding(vertical = 4.dp, horizontal = 4.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
