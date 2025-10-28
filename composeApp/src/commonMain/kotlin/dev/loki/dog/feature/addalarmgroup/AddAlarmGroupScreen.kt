@@ -117,8 +117,10 @@ fun AddAlarmGroupScreen(
                 val prevAlarms = alarms
                 val targetAlarm = prevAlarms[index]
                 val newAlarms = prevAlarms.toMutableList() - targetAlarm + updatedAlarm
-                viewModel.upsertAlarm(alarmGroup, updatedAlarm)
                 alarms = newAlarms
+                if (alarmGroup.id != 0L) {
+                    viewModel.upsertAlarm(alarmGroup, updatedAlarm)
+                }
             }
         )
     }
@@ -158,7 +160,7 @@ fun AddAlarmGroupScreen(
                 onSaveOrSaveTemp = onSaveOrSaveTemp,
                 onAddNewAlarm = { newAlarm ->
                     alarms += newAlarm
-                    if (!alarmGroup.isTemp) {
+                    if (alarmGroup.id != 0L) {
                         viewModel.upsertAlarm(alarmGroup, newAlarm)
                     }
                 },
@@ -482,7 +484,7 @@ private fun AddAlarmGroupTopBar(
                     tint = OnTertiaryLight
                 )
             }
-            Spacer(modifier = Modifier.width(24.dp))
+            Spacer(modifier = Modifier.width(16.dp))
         }
 
         IconButton(
@@ -545,12 +547,12 @@ private fun EditableAlarmGroupHeader(
                     },
                     singleLine = true,
                     textStyle = TextStyle(
-                        fontSize = 28.sp
+                        fontSize = 24.sp
                     ),
                     placeholder = {
                         Text(
                             text = "Title",
-                            fontSize = 28.sp,
+                            fontSize = 24.sp,
                             color = OutlineLight
                         )
                     },
