@@ -10,6 +10,8 @@ import platform.Foundation.NSRunLoop
 import platform.UserNotifications.*
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 actual class PlatformAlarmScheduler() : AlarmScheduler {
 
@@ -31,12 +33,26 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
     }
 
     override suspend fun schedule(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
-        if (!alarm.isActivated) return
+        println("🔔 iOS schedule() 호출 - alarmId: ${alarm.id}, time: ${alarm.time}, repeatDays: $repeatDays, activated: ${alarm.isActivated}")
+
+        if (!alarm.isActivated) {
+            println("⚠️ iOS: 알람이 비활성화 상태라서 스케줄링 안 함")
+            return
+        }
 
         val center = UNUserNotificationCenter.currentNotificationCenter()
-        requestAuthIfNeeded(center)
+
+        // 권한 확인 및 요청
+        println("🔐 iOS: 알림 권한 확인 중...")
+        val hasPermission = requestAuthIfNeeded(center)
+        if (!hasPermission) {
+            println("⚠️ iOS: 알람 권한이 거부되었습니다.")
+            return
+        }
+        println("✅ iOS: 알림 권한 확인 완료")
 
         val (hour, minute) = parseHourMinute(alarm.time)
+        println("⏰ iOS: 파싱된 시간 - hour: $hour, minute: $minute")
 
         // 반복 요일이 비어있다면: 다음 최근 시각 1회성 알람
         if (repeatDays.isEmpty()) {
@@ -112,7 +128,28 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
                 content = content,
                 trigger = trigger
             )
-            center.addNotificationRequest(request, withCompletionHandler = null)
+
+            println("📝 iOS: 알림 등록 요청 - ID: $requestId, weekday: $weekday, hour: $hour, minute: $minute")
+            center.addNotificationRequest(request) { error ->
+                if (error != null) {
+                    println("❌ iOS: 알림 등록 실패 - $requestId, error: ${error.localizedDescription}")
+                } else {
+                    println("✅ iOS: 알림 등록 성공 - $requestId")
+                }
+            }
+        }
+
+        // 등록된 알림 목록 확인
+        printScheduledNotifications(center)
+    }
+
+    private fun printScheduledNotifications(center: UNUserNotificationCenter) {
+        center.getPendingNotificationRequestsWithCompletionHandler { requests ->
+            val list = requests as? List<UNNotificationRequest>
+            println("📋 iOS: 현재 등록된 알림 개수: ${list?.size ?: 0}")
+            list?.forEach { req ->
+                println("   - ${req.identifier}: ${req.trigger}")
+            }
         }
     }
 
@@ -169,18 +206,38 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
         return h to m
     }
 
-    private fun requestAuthIfNeeded(center: UNUserNotificationCenter) {
-        dispatch_async(dispatch_get_main_queue()) {
-            center.getNotificationSettingsWithCompletionHandler { settings ->
-                val status = settings?.authorizationStatus ?: UNAuthorizationStatusNotDetermined
-                if (status == UNAuthorizationStatusNotDetermined) {
-                    center.requestAuthorizationWithOptions(
-                        options = UNAuthorizationOptionAlert or
-                                UNAuthorizationOptionSound or
-                                UNAuthorizationOptionBadge
-                    ) { _, _ -> /* 무시 */ }
+    private suspend fun requestAuthIfNeeded(center: UNUserNotificationCenter): Boolean =
+        suspendCancellableCoroutine { continuation ->
+            dispatch_async(dispatch_get_main_queue()) {
+                center.getNotificationSettingsWithCompletionHandler { settings ->
+                    val status = settings?.authorizationStatus ?: UNAuthorizationStatusNotDetermined
+
+                    when (status) {
+                        UNAuthorizationStatusAuthorized -> {
+                            continuation.resume(true)
+                        }
+                        UNAuthorizationStatusNotDetermined -> {
+                            center.requestAuthorizationWithOptions(
+                                options = UNAuthorizationOptionAlert or
+                                        UNAuthorizationOptionSound or
+                                        UNAuthorizationOptionBadge
+                            ) { granted, error ->
+                                if (error != null) {
+                                    println("⚠️ iOS 알람 권한 요청 실패: ${error.localizedDescription}")
+                                    continuation.resume(false)
+                                } else {
+                                    println("✅ iOS 알람 권한 granted: $granted")
+                                    continuation.resume(granted)
+                                }
+                            }
+                        }
+                        else -> {
+                            // 거부됨 또는 기타 상태
+                            println("⚠️ iOS 알람 권한 상태: $status (0=NotDetermined, 1=Denied, 2=Authorized)")
+                            continuation.resume(false)
+                        }
+                    }
                 }
             }
         }
-    }
 }
