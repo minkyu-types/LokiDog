@@ -7,21 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		195E65F32EAF07CF00D378F3 /* ComposeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 190722D62EAB5AB700E71753 /* ComposeApp.framework */; };
-		195E65F42EAF07CF00D378F3 /* ComposeApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 190722D62EAB5AB700E71753 /* ComposeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		195E65F62EAF493500D378F3 /* ComposeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 190722D62EAB5AB700E71753 /* ComposeApp.framework */; };
+		195E65F72EAF493500D378F3 /* ComposeApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 190722D62EAB5AB700E71753 /* ComposeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A93A953B29CC810C00F8E227 /* iosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93A953A29CC810C00F8E227 /* iosApp.swift */; };
 		A93A953F29CC810D00F8E227 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A93A953E29CC810D00F8E227 /* Assets.xcassets */; };
 		A93A954229CC810D00F8E227 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A93A954129CC810D00F8E227 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		195E65F52EAF07CF00D378F3 /* Embed Frameworks */ = {
+		195E65F82EAF493500D378F3 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				195E65F42EAF07CF00D378F3 /* ComposeApp.framework in Embed Frameworks */,
+				195E65F72EAF493500D378F3 /* ComposeApp.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -44,7 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				195E65F32EAF07CF00D378F3 /* ComposeApp.framework in Frameworks */,
+				195E65F62EAF493500D378F3 /* ComposeApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,7 +108,7 @@
 				A93A953329CC810C00F8E227 /* Sources */,
 				A93A953429CC810C00F8E227 /* Frameworks */,
 				A93A953529CC810C00F8E227 /* Resources */,
-				195E65F52EAF07CF00D378F3 /* Embed Frameworks */,
+				195E65F82EAF493500D378F3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
