@@ -1,4 +1,9 @@
 <resources>
+    <string name="start">Start</string>
+    <string name="resume">Resume</string>
+    <string name="pause">Pause</string>
+    <string name="cancel">Cancel</string>
+
     <string name="memo">Memo</string>
     <string name="confirm">Confirm</string>
     <string name="save">Save</string>
