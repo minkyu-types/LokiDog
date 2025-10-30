@@ -39,4 +39,5 @@ val alarmUseCaseModule = module {
     single { GetTimerHistoriesUseCase(get()) }
     single { CreateTimerHistoryUseCase(get()) }
     single { DeleteTimerHistoryUseCase(get()) }
+    single { GetTimerHistoriesUseCase(get()) }
 }

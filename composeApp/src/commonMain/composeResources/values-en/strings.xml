@@ -10,6 +10,7 @@
     <string name="save_temp">Shelf</string>
     <string name="alarms"><u>%1$d</u> Alarms</string>
 
+    <string name="screen_main_alarm_group_empty">Create new alarm group</string>
     <string name="bottom_bar_alarm_group_list">Alarm Group</string>
     <string name="bottom_bar_alarm_timer">Timer</string>
 

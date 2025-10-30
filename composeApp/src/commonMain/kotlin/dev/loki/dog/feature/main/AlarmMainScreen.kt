@@ -19,12 +19,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +61,7 @@ import dev.loki.dog.theme.Seed
 import dev.loki.dog.theme.SurfaceVariantLight
 import kotlinx.coroutines.launch
 import lokidog.composeapp.generated.resources.Res
+import lokidog.composeapp.generated.resources.screen_main_alarm_group_empty
 import lokidog.composeapp.generated.resources.sort_activated_first
 import lokidog.composeapp.generated.resources.sort_alphabetical
 import lokidog.composeapp.generated.resources.sort_custom
@@ -79,6 +82,7 @@ fun AlarmMainScreen(
     onAlarmGroupUpdate: (List<AlarmGroupModel>) -> Unit,
     onSelectedItemsChange: (Set<AlarmGroupModel>) -> Unit,
     onAlarmGroupClick: (AlarmGroupModel) -> Unit,
+    onAddAlarmGroupClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -157,12 +161,19 @@ fun AlarmMainScreen(
                     focusManager.clearFocus()
                 }
         ) {
-            Text(
-                text = "알람을 추가해보세요",
-                fontSize = 20.sp,
-                textAlign = TextAlign.Center,
-                color = OnTertiaryLight
-            )
+            TextButton(
+                onClick = onAddAlarmGroupClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = OnPrimaryContainerLight
+                )
+            ) {
+                Text(
+                    text = stringResource(Res.string.screen_main_alarm_group_empty),
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    color = OnTertiaryLight
+                )
+            }
         }
     } else {
         LazyColumn(

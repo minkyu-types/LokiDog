@@ -15,6 +15,7 @@
     <string name="bottom_bar_alarm_group_list">알람 그룹</string>
     <string name="bottom_bar_alarm_timer">타이머</string>
 
+    <string name="screen_main_alarm_group_empty">알람 그룹 생성하기</string>
     <string name="screen_sub_alarm_group_add">알람 그룹 추가</string>
     <string name="screen_sub_alarm_group_list_temp">임시 저장 알람 그룹 목록</string>
 

@@ -198,6 +198,9 @@ fun MainScreen(
                         },
                         onAlarmGroupClick = { group ->
                             navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/${group.id}")
+                        },
+                        onAddAlarmGroupClick = {
+                            navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/${0L}")
                         }
                     )
                 }
