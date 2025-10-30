@@ -33,9 +33,9 @@ import kotlin.math.roundToInt
 @Composable
 fun <T> SwipeToDeleteItem(
     item: T,
-    content: @Composable () -> Unit,
     onDelete: (T) -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
 ) {
     val density = LocalDensity.current
     val actionWidthDp = 80.dp
