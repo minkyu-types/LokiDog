@@ -20,6 +20,30 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
         private const val THREAD_ID = "dev.loki.dog.alarm.thread"
         private const val ID_PREFIX_ALARM = "alarm"
         private const val ID_PREFIX_GROUP = "group"
+        private const val ACTION_STOP = "dev.loki.dog.alarm.stop"
+
+        /**
+         * 앱 초기화 시 알림 카테고리를 설정합니다
+         */
+        fun setupNotificationCategories() {
+            val stopAction = UNNotificationAction.actionWithIdentifier(
+                identifier = ACTION_STOP,
+                title = "정지",
+                options = UNNotificationActionOptionForeground
+            )
+
+            val category = UNNotificationCategory.categoryWithIdentifier(
+                identifier = CATEGORY_ID,
+                actions = listOf(stopAction),
+                intentIdentifiers = listOf(),
+                options = 0u
+            )
+
+            val center = UNUserNotificationCenter.currentNotificationCenter()
+            center.setNotificationCategories(setOf(category))
+
+            println("✅ iOS: 알람 알림 카테고리 등록 완료")
+        }
     }
 
     private fun DayOfWeek.toAppleWeekday(): Int = when (this) {
@@ -59,11 +83,14 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
             val requestId = buildId(alarmId = alarm.id, groupId = alarm.groupId, weekday = 0)
 
             val content = UNMutableNotificationContent().apply {
-                setTitle("Alarm")
+                setTitle("알람")
                 setBody(alarm.memo)
                 setCategoryIdentifier(CATEGORY_ID)
                 setThreadIdentifier(THREAD_ID)
+                // 일반 알림 소리 사용 (Critical Alert는 Apple 승인 필요)
                 setSound(UNNotificationSound.defaultSound())
+                // Time-sensitive interruption level (iOS 15+에서 Focus 모드 무시)
+                setInterruptionLevel(UNNotificationInterruptionLevelTimeSensitive)
                 setUserInfo(
                     mapOf(
                         "alarmId" to alarm.id,
@@ -98,11 +125,13 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
             val requestId = buildId(alarmId = alarm.id, groupId = alarm.groupId, weekday = weekday)
 
             val content = UNMutableNotificationContent().apply {
-                setTitle("Alarm")
+                setTitle("알람")
                 setBody(alarm.memo)
                 setCategoryIdentifier(CATEGORY_ID)
                 setThreadIdentifier(THREAD_ID)
-                setSound(UNNotificationSound.defaultSound())
+                // Critical alert: 무음 모드에서도 소리가 나며, 진동도 발생
+                setSound(UNNotificationSound.defaultCriticalSound())
+                setInterruptionLevel(UNNotificationInterruptionLevelCritical)
                 setUserInfo(
                     mapOf(
                         "alarmId" to alarm.id,

@@ -90,6 +90,9 @@ private class NotificationDelegate(
         willPresentNotification: UNNotification,
         withCompletionHandler: (UNNotificationPresentationOptions) -> Unit
     ) {
+        // 앱이 foreground에 있을 때 추가로 알람 소리 재생
+        AlarmService.playAlarmSound()
+
         withCompletionHandler(UNNotificationPresentationOptionAlert or UNNotificationPresentationOptionSound)
     }
 
@@ -100,11 +103,27 @@ private class NotificationDelegate(
         withCompletionHandler: () -> Unit
     ) {
         val userInfo = didReceiveNotificationResponse.notification.request.content.userInfo
+        val actionIdentifier = didReceiveNotificationResponse.actionIdentifier
 
         val alarmId = (userInfo["alarmId"] as? NSNumber)?.longLongValue ?: -1L
         val memo = userInfo["alarmMemo"] as? String
 
-        onOpen(alarmId, memo)
+        // "정지" 버튼을 눌렀거나 알림을 탭한 경우
+        if (actionIdentifier == "dev.loki.dog.alarm.stop" ||
+            actionIdentifier == UNNotificationDefaultActionIdentifier) {
+
+            // 알람 소리 정지
+            AlarmService.stopAlarmSound()
+
+            // 해당 알람의 알림 제거
+            AlarmService.removeDeliveredNotification(alarmId)
+        }
+
+        // 알림 탭한 경우에만 앱 열기
+        if (actionIdentifier == UNNotificationDefaultActionIdentifier) {
+            onOpen(alarmId, memo)
+        }
+
         withCompletionHandler()
     }
 }

@@ -15,15 +15,64 @@ import dev.loki.alarm.model.Alarm
 actual class PlatformAlarmScheduler(
     private val context: Context
 ): AlarmScheduler {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     companion object {
+        const val ACTION_ALARM = "dev.loki.dog.ACTION_ALARM"
+        const val KEY_TRIGGER_TIME = "timerTrigger"
+        const val KEY_TIMER_DURATION = "timerDuration"
         const val KEY_ALARM_ID = "alarmId"
         const val KEY_ALARM_TIME = "alarmTime"
         const val KEY_ALARM_MEMO = "alarmMemo"
+        private const val TIMER_ALARM_ID = 12345
     }
 
-    override suspend fun schedule(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    override fun scheduleTimer(triggerTime: Long) {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            action = ACTION_ALARM
+            putExtra("trigger_time", triggerTime)
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            TIMER_ALARM_ID,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (alarmManager.canScheduleExactAlarms()) {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    triggerTime,
+                    pendingIntent
+                )
+            }
+        } else {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerTime,
+                pendingIntent
+            )
+        }
+    }
+
+    override fun cancelTimer() {
+        val intent = Intent(context, AlarmReceiver::class.java).apply {
+            action = ACTION_ALARM
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            TIMER_ALARM_ID,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        alarmManager.cancel(pendingIntent)
+        pendingIntent.cancel()
+    }
+
+    override fun schedule(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
         val alarmTime = getAlarmTime(repeatDays, alarm.time)
         val intent = buildAlarmIntent(alarm.id, alarm.memo, getAlarmTime(repeatDays, alarm.time))
         val pendingIntent = PendingIntent.getBroadcast(
@@ -52,8 +101,7 @@ actual class PlatformAlarmScheduler(
         }
     }
 
-    override suspend fun cancel(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
-        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    override fun cancel(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
         val intent = buildAlarmIntent(alarm.id, alarm.memo, getAlarmTime(repeatDays, alarm.time))
         val pendingIntent = PendingIntent.getBroadcast(
             context,
@@ -65,7 +113,7 @@ actual class PlatformAlarmScheduler(
         alarmManager.cancel(pendingIntent)
     }
 
-    override suspend fun cancelByGroup(groupId: Long) {
+    override fun cancelByGroup(groupId: Long) {
         TODO("Not yet implemented")
     }
 
@@ -83,7 +131,7 @@ actual class PlatformAlarmScheduler(
 
     private fun buildAlarmIntent(alarmId: Long, memo: String? = null, time: Long? = null): Intent {
         return Intent(context, AlarmReceiver::class.java).apply {
-            action = "dev.loki.dog.ACTION_ALARM" // 반드시 고정
+            action = ACTION_ALARM
             putExtra(KEY_ALARM_ID, alarmId)
             putExtra(KEY_ALARM_MEMO, memo)
             putExtra(KEY_ALARM_TIME, time)
