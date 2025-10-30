@@ -57,6 +57,8 @@ import dev.loki.dog.feature.main.AlarmMainScreen
 import dev.loki.dog.feature.main.AlarmMainViewModel
 import dev.loki.dog.feature.temp.TempAlarmGroupsScreen
 import dev.loki.dog.feature.temp.TempAlarmGroupsViewModel
+import dev.loki.dog.feature.timer.TimerScreen
+import dev.loki.dog.feature.timer.TimerViewModel
 import dev.loki.dog.theme.OnPrimaryContainerLight
 import dev.loki.dog.theme.OnTertiaryLight
 import dev.loki.dog.theme.PrimaryLight
@@ -203,7 +205,9 @@ fun MainScreen(
                 composable(
                     route = MainScreen.TIMER.name
                 ) {
-
+                    TimerScreen(
+                        viewModel = getKoin().get<TimerViewModel>()
+                    )
                 }
 
                 composable(
