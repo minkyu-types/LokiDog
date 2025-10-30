@@ -7,9 +7,11 @@ import androidx.room.TypeConverters
 import dev.loki.alarm_data.converter.DayOfWeekSetConverter
 import dev.loki.alarm_data.dao.AlarmDao
 import dev.loki.alarm_data.dao.AlarmGroupDao
+import dev.loki.alarm_data.dao.TimerHistoryDao
 import dev.loki.alarm_data.AlarmDatabaseConstructor
 import dev.loki.alarm_data.model.AlarmEntity
 import dev.loki.alarm_data.model.AlarmGroupEntity
+import dev.loki.alarm_data.model.TimerHistoryEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
@@ -18,14 +20,16 @@ import kotlinx.coroutines.IO
         [
             AlarmEntity::class,
             AlarmGroupEntity::class,
+            TimerHistoryEntity::class,
         ],
-    version = 7
+    version = 8
 )
 @TypeConverters(DayOfWeekSetConverter::class)
 @ConstructedBy(AlarmDatabaseConstructor::class)
 abstract class AlarmDatabase: RoomDatabase() {
     abstract fun getAlarmDao(): AlarmDao
     abstract fun getAlarmGroupDao(): AlarmGroupDao
+    abstract fun getTimerHistoryDao(): TimerHistoryDao
 }
 
 fun getAlarmDatabase(
