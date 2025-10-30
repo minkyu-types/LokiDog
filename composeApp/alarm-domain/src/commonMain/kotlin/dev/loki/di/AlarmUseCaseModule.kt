@@ -14,6 +14,9 @@ import dev.loki.alarmgroup.usecase.GetAlarmGroupWithAlarmsUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.GetTempAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
+import dev.loki.timerhistory.usecase.CreateTimerHistoryUseCase
+import dev.loki.timerhistory.usecase.DeleteTimerHistoryUseCase
+import dev.loki.timerhistory.usecase.GetTimerHistoriesUseCase
 import org.koin.dsl.module
 
 val alarmUseCaseModule = module {
@@ -32,4 +35,8 @@ val alarmUseCaseModule = module {
     single { GetTempAlarmGroupsUseCase(get()) }
     single { GetAlarmGroupWithAlarmsUseCase(get()) }
     single { UpdateAlarmGroupUseCase(get(), get()) }
+
+    single { GetTimerHistoriesUseCase(get()) }
+    single { CreateTimerHistoryUseCase(get()) }
+    single { DeleteTimerHistoryUseCase(get()) }
 }

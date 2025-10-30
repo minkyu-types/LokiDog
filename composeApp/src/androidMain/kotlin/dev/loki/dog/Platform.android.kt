@@ -22,6 +22,7 @@ actual fun getAlarmDatabaseModule(): Module {
         }
         single { get<AlarmDatabase>().getAlarmDao() }
         single { get<AlarmDatabase>().getAlarmGroupDao() }
+        single { get<AlarmDatabase>().getTimerHistoryDao() }
     }
 }
 
