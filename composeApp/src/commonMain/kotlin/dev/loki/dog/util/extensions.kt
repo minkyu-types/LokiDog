@@ -79,3 +79,19 @@ fun LocalDateTime.plusDays(datePeriod: DatePeriod): LocalDateTime {
         nanosecond = this.nanosecond
     )
 }
+
+/**
+ * 61000L
+ */
+fun Long.toTimeStr(): String {
+    val min = (this / 60_000L)
+    val sec = (this % 60_000L) / 1_000L
+    return "${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}"
+}
+
+fun Long.toTimerTimeStr(): String {
+    val hour = (this / 3_600_000L)
+    val min = (this / 60_000L) % 60
+    val sec = (this / 1000L) % 60
+    return "${hour.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}"
+}
