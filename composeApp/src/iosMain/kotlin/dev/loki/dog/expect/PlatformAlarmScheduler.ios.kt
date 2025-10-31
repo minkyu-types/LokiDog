@@ -35,7 +35,7 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
             val category = UNNotificationCategory.categoryWithIdentifier(
                 identifier = CATEGORY_ID,
                 actions = listOf(stopAction),
-                intentIdentifiers = listOf(),
+                intentIdentifiers = listOf(UNNotificationDefaultActionIdentifier),
                 options = 0u
             )
 
@@ -90,7 +90,7 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
                 // 일반 알림 소리 사용 (Critical Alert는 Apple 승인 필요)
                 setSound(UNNotificationSound.defaultSound())
                 // Time-sensitive interruption level (iOS 15+에서 Focus 모드 무시)
-                setInterruptionLevel(UNNotificationInterruptionLevelTimeSensitive)
+                setInterruptionLevel(UNNotificationInterruptionLevel.UNNotificationInterruptionLevelTimeSensitive)
                 setUserInfo(
                     mapOf(
                         "alarmId" to alarm.id,
@@ -131,7 +131,7 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
                 setThreadIdentifier(THREAD_ID)
                 // Critical alert: 무음 모드에서도 소리가 나며, 진동도 발생
                 setSound(UNNotificationSound.defaultCriticalSound())
-                setInterruptionLevel(UNNotificationInterruptionLevelCritical)
+                setInterruptionLevel(UNNotificationInterruptionLevel.UNNotificationInterruptionLevelCritical)
                 setUserInfo(
                     mapOf(
                         "alarmId" to alarm.id,
@@ -182,7 +182,7 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
         }
     }
 
-    override suspend fun cancel(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
+    override fun cancel(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
         val center = UNUserNotificationCenter.currentNotificationCenter()
         val targetPrefix = "${ID_PREFIX_GROUP}_${alarm.groupId}_${alarm.id}_"
 
@@ -208,7 +208,7 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
         NSDateComponents().date?.let { NSRunLoop.currentRunLoop.runUntilDate(it) }
     }
 
-    override suspend fun cancelByGroup(groupId: Long) {
+    override fun cancelByGroup(groupId: Long) {
         val center = UNUserNotificationCenter.currentNotificationCenter()
         val prefix = "${ID_PREFIX_GROUP}_${groupId}_"
         center.getPendingNotificationRequestsWithCompletionHandler { list ->
@@ -269,4 +269,12 @@ actual class PlatformAlarmScheduler() : AlarmScheduler {
                 }
             }
         }
+
+    override fun scheduleTimer(triggerTime: Long) {
+        TODO("Not yet implemented")
+    }
+
+    override fun cancelTimer() {
+        TODO("Not yet implemented")
+    }
 }
