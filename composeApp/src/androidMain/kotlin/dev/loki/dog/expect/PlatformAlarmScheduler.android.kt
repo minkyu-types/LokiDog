@@ -19,8 +19,6 @@ actual class PlatformAlarmScheduler(
 
     companion object {
         const val ACTION_ALARM = "dev.loki.dog.ACTION_ALARM"
-        const val KEY_TRIGGER_TIME = "timerTrigger"
-        const val KEY_TIMER_DURATION = "timerDuration"
         const val KEY_ALARM_ID = "alarmId"
         const val KEY_ALARM_TIME = "alarmTime"
         const val KEY_ALARM_MEMO = "alarmMemo"
@@ -72,7 +70,7 @@ actual class PlatformAlarmScheduler(
         pendingIntent.cancel()
     }
 
-    override fun schedule(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
+    override suspend fun schedule(repeatDays: Set<DayOfWeek>, alarm: Alarm) {
         val alarmTime = getAlarmTime(repeatDays, alarm.time)
         val intent = buildAlarmIntent(alarm.id, alarm.memo, getAlarmTime(repeatDays, alarm.time))
         val pendingIntent = PendingIntent.getBroadcast(
