@@ -1,13 +1,12 @@
 package dev.loki.dog.feature.addalarmgroup
 
-import co.touchlab.kermit.Logger
 import dev.loki.DomainResult
 import dev.loki.alarm.usecase.DeleteAlarmUseCase
 import dev.loki.alarm.usecase.GetAlarmByIdUseCase
 import dev.loki.alarm.usecase.GetAlarmsByGroupIdUseCase
 import dev.loki.alarm.usecase.RescheduleAlarmUseCase
 import dev.loki.alarm.usecase.UpsertAlarmUseCase
-import dev.loki.alarmgroup.usecase.GetAlarmGroupById
+import dev.loki.alarmgroup.usecase.GetAlarmGroupByIdUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupWithAlarmsUseCase
 import dev.loki.alarmgroup.usecase.InsertAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
@@ -36,7 +35,7 @@ class AddAlarmGroupStore(
 ) {
     private var getAlarmGroupJob: Job? = null
     private val getAlarmGroupWithAlarmsUseCase: GetAlarmGroupWithAlarmsUseCase by inject()
-    private val getAlarmGroupById: GetAlarmGroupById by inject()
+    private val getAlarmGroupByIdUseCase: GetAlarmGroupByIdUseCase by inject()
     private val insertAlarmGroupUseCase: InsertAlarmGroupUseCase by inject()
     private val updateAlarmGroupUseCase: UpdateAlarmGroupUseCase by inject()
     private val alarmMapper: AlarmMapper by inject()
@@ -79,7 +78,7 @@ class AddAlarmGroupStore(
                     val group = saveTempAlarmGroup(action.alarmGroup)
                     action.alarms.forEach {
                         val alarm = alarmMapper.mapToDomain(it)
-                        upsertAlarmUseCase(group.repeatDays, alarm.copy(groupId = group.id))
+                        upsertAlarmUseCase(alarm.copy(groupId = group.id))
                     }
                 }
             }
@@ -161,7 +160,7 @@ class AddAlarmGroupStore(
     private suspend fun updateAlarmGroup(
         alarmGroup: AlarmGroupModel,
     ) {
-        val prevData = getAlarmGroupById(alarmGroup.id) ?: return
+        val prevData = getAlarmGroupByIdUseCase(alarmGroup.id) ?: return
         val domainAlarmGroup = alarmGroupMapper.mapToDomain(alarmGroup)
         updateAlarmGroupUseCase(domainAlarmGroup)
 
@@ -201,7 +200,7 @@ class AddAlarmGroupStore(
 
         viewModelScope.launch {
             val prevAlarmData = getAlarmByIdUseCase(alarm.id)
-            upsertAlarmUseCase(alarmGroup.repeatDays, domainAlarm)
+            upsertAlarmUseCase(domainAlarm)
             if (prevAlarmData != null) {
                 if (
                     prevAlarmData.time != domainAlarm.time ||

@@ -9,7 +9,7 @@ import dev.loki.alarm.usecase.UpsertAlarmUseCase
 import dev.loki.alarmgroup.usecase.InsertAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.DeleteAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.DeleteSelectedAlarmGroupsUseCase
-import dev.loki.alarmgroup.usecase.GetAlarmGroupById
+import dev.loki.alarmgroup.usecase.GetAlarmGroupByIdUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupWithAlarmsUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.GetTempAlarmGroupsUseCase
@@ -26,7 +26,7 @@ val alarmUseCaseModule = module {
     single { UpsertAlarmUseCase(get(), get()) }
     single { DeleteAlarmUseCase(get(), get()) }
 
-    single { GetAlarmGroupById(get()) }
+    single { GetAlarmGroupByIdUseCase(get()) }
     single { InsertAlarmGroupUseCase(get()) }
     single { DeleteAlarmGroupUseCase(get()) }
     single { DeleteSelectedAlarmGroupsUseCase(get()) }

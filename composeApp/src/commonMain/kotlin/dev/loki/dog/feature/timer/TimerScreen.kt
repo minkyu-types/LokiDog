@@ -307,7 +307,10 @@ private fun TimerHistoryItem(
             fontSize = 32.sp,
             color = OnTertiaryLight,
             modifier = modifier
-                .clickable {
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) {
                     onClick(history)
                 }
         )
