@@ -23,7 +23,7 @@ val alarmUseCaseModule = module {
     single { GetAlarmByIdUseCase(get())}
     single { GetAlarmsByGroupIdUseCase(get()) }
     single { RescheduleAlarmUseCase(get()) }
-    single { UpsertAlarmUseCase(get(), get()) }
+    single { UpsertAlarmUseCase(get()) }
     single { DeleteAlarmUseCase(get(), get()) }
 
     single { GetAlarmGroupByIdUseCase(get()) }
