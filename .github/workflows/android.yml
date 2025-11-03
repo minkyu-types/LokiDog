@@ -20,37 +20,6 @@ jobs:
         distribution: 'temurin'
         cache: gradle
         
-    - name: Create gradle.properties
-      run: |
-        cat > gradle.properties << 'EOF'
-        # Kotlin
-        kotlin.code.style=official
-        kotlin.mpp.androidSourceSetLayoutVersion=2
-        kotlin.mpp.enableCInteropCommonization=true
-        kotlin.mpp.applyDefaultHierarchyTemplate=false
-        
-        # Android
-        android.useAndroidX=true
-        android.enableJetifier=true
-        android.nonTransitiveRClass=true
-        
-        # Gradle
-        org.gradle.jvmargs=-Xmx8192m -XX:MaxMetaspaceSize=2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
-        org.gradle.caching=true
-        org.gradle.configuration-cache=true
-        org.gradle.daemon=true
-        org.gradle.parallel=true
-        
-        # Kotlin Native
-        kotlin.native.cacheKind=none
-        
-        # Compose
-        org.jetbrains.compose.experimental.uikit.enabled=true
-        EOF
-        
-        echo "✅ gradle.properties created:"
-        cat gradle.properties
-
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
