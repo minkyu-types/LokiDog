@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = AlarmGroupEntity::class,
             parentColumns = ["id"],
-            childColumns = ["groupId"],
+            childColumns = ["groupId", "isTemp"],
             onDelete = ForeignKey.CASCADE
         )
     ],

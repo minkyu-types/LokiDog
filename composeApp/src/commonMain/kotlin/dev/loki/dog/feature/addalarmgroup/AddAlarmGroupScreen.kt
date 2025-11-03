@@ -35,8 +35,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -48,7 +46,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +58,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
-import coil3.compose.LocalPlatformContext
 import dev.loki.dog.component.SelectionModeItem
 import dev.loki.dog.component.SwipeToDeleteItem
 import dev.loki.dog.component.TimeWheelBottomSheet
@@ -76,11 +72,11 @@ import dev.loki.dog.theme.OutlineLight
 import dev.loki.dog.theme.OutlineVariantLight
 import dev.loki.dog.theme.PrimaryContainerLight
 import dev.loki.dog.theme.TertiaryContainerLight
-import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import lokidog.composeapp.generated.resources.Res
 import lokidog.composeapp.generated.resources.alarms
 import lokidog.composeapp.generated.resources.alarms_max_description
+import lokidog.composeapp.generated.resources.alarms_min_repeat_days
 import lokidog.composeapp.generated.resources.save
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform.getKoin
@@ -182,6 +178,7 @@ fun AddAlarmGroupScreen(
                     .padding(bottom = 16.dp)
             ) {
                 item {
+                    val repeatDayErrorStr = stringResource(Res.string.alarms_min_repeat_days)
                     Spacer(modifier = Modifier.height(16.dp))
                     EditableAlarmGroupHeader(
                         alarmGroup = alarmGroup,
@@ -199,7 +196,7 @@ fun AddAlarmGroupScreen(
                         },
                         onRepeatDaysChange = { repeatDays ->
                             if (repeatDays.size == 1 && alarmGroup.repeatDays == repeatDays) {
-                                onError("최소 1개의 반복 요일을 선택해주세요.")
+                                onError(repeatDayErrorStr)
                             }
 
                             alarmGroup = alarmGroup.copy(repeatDays = repeatDays)
