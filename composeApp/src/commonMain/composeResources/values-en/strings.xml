@@ -9,6 +9,8 @@
     <string name="save">Save</string>
     <string name="save_temp">Shelf</string>
     <string name="alarms"><u>%1$d</u> Alarms</string>
+    <string name="alarms_max_description">You can add up to %1$d alarms.</string>
+    <string name="alarms_min_repeat_days">Please select at least one repeat day.</string>
 
     <string name="screen_main_alarm_group_empty">Create new alarm group</string>
     <string name="bottom_bar_alarm_group_list">Alarm Group</string>
