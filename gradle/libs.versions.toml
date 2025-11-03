@@ -8,7 +8,7 @@ orbit = "10.0.0"
 
 androidx-activityCompose = "1.10.1"
 androidx-uiTest = "1.8.1"
-androidx-lifecycle = "2.9.4"
+androidx-lifecycle = "2.9.5"
 androidx-navigation = "2.9.0-rc01"
 androidx-viewmodel = "2.9.4"
 androidx-paging3 = "3.3.6"
@@ -39,15 +39,21 @@ espressoCore = "3.7.0"
 appcompat = "1.7.1"
 material = "1.13.0"
 
+sqlite = "2.6.0"
+kotest = "6.0"
+mockk = "1.14.6"
+
 [libraries]
 multiplatformSettings = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
 
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-uitest-testManifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-uiTest" }
 androidx-uitest-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-uiTest" }
-androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
+lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-viewmodel"}
 androidx-lifecycle-runtime = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
 androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "androidx-room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
@@ -80,7 +86,9 @@ orbit-compose = { module = "org.orbit-mvi:orbit-compose", version.ref = "orbit" 
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koin-annotations" }
+koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koin-annotations" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
 
 coil = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
@@ -96,6 +104,9 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+kotest = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest"}
+mockk = { module = "io.mockk:mockk", version.ref = "mockk"}
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

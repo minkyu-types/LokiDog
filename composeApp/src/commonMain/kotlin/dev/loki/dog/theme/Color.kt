@@ -7,6 +7,8 @@ import androidx.compose.ui.graphics.Color
 
 internal val Seed = Color(0xFF1D3557)
 
+internal val ConstraintLight = Color(0xFF1ffba08)
+internal val OnConstraintLight = Color(0xff1856104)
 internal val PrimaryLight = Color(0xFF485F84)
 internal val OnPrimaryLight = Color(0xFFFFFFFF)
 internal val PrimaryContainerLight = Color(0xFFD5E3FF)
@@ -20,6 +22,7 @@ internal val OnTertiaryLight = Color(0xFFFFFFFF)
 internal val TertiaryContainerLight = Color(0xFFB9ECEE)
 internal val OnTertiaryContainerLight = Color(0xFF1A4E50)
 internal val ErrorLight = Color(0xFFBB152C)
+internal val ErrorLighter = Color(0xffd53349)
 internal val OnErrorLight = Color(0xFFFFFFFF)
 internal val ErrorContainerLight = Color(0xFFFFDAD8)
 internal val OnErrorContainerLight = Color(0xFF410007)

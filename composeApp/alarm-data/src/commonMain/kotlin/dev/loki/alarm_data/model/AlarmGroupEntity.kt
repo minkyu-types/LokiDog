@@ -2,15 +2,18 @@ package dev.loki.alarm_data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.datetime.DayOfWeek
 
-@Entity
+@Entity(tableName = "alarm_group")
 data class AlarmGroupEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 1,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val order: Int,
     val title: String,
-    val alarms: List<AlarmEntity> = emptyList(),
     val description: String,
-    val created: Long,
-    val updated: Long,
+    val repeatDays: Set<DayOfWeek> = emptySet(),
+    val alarmSize: Int,
+    val createdAt: Long,
+    val updatedAt: Long,
     val isActivated: Boolean,
     val isTemp : Boolean,
 )

@@ -1,11 +1,13 @@
 package dev.loki.dog.feature
 
-enum class MainScreens(val title: String) {
-    ALARM_MAIN("알람/그룹 목록"),
-    TIMER_MAIN("타이머")
+sealed interface Screens
+
+enum class MainScreen: Screens {
+    ALARM,
+    TIMER
 }
 
-enum class SubScreens(val title: String) {
-    ALARM_GROUP_DETAIL("알람 그룹 상세"),
-    TEMP_ALARM_GROUP_LIST("임시저장 알람 그룹 목록"),
+enum class SubScreen: Screens {
+    ALARM_GROUP_ADD,
+    ALARM_GROUP_TEMP_LIST,
 }

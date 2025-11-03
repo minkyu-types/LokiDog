@@ -4,7 +4,8 @@ import dev.loki.alarm.model.Alarm
 
 interface AlarmRepository {
 
-    suspend fun createAlarm(alarm: Alarm)
-    suspend fun updateAlarm(alarm: Alarm)
+    suspend fun getAlarmById(id: Long): Alarm?
+    suspend fun getAlarmsByGroupId(groupId: Long): List<Alarm>
+    suspend fun upsertAlarm(alarm: Alarm): Alarm
     suspend fun deleteAlarm(alarm: Alarm)
 }

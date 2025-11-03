@@ -7,13 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		195E65F62EAF493500D378F3 /* ComposeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 190722D62EAB5AB700E71753 /* ComposeApp.framework */; };
+		195E65F72EAF493500D378F3 /* ComposeApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 190722D62EAB5AB700E71753 /* ComposeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A93A953B29CC810C00F8E227 /* iosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93A953A29CC810C00F8E227 /* iosApp.swift */; };
 		A93A953F29CC810D00F8E227 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A93A953E29CC810D00F8E227 /* Assets.xcassets */; };
 		A93A954229CC810D00F8E227 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A93A954129CC810D00F8E227 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		195E65F82EAF493500D378F3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				195E65F72EAF493500D378F3 /* ComposeApp.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		A93A953729CC810C00F8E227 /* LokiDog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LokiDog.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		190722D62EAB5AB700E71753 /* ComposeApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposeApp.framework; path = ../composeApp/build/composeAppXCFrameworkTemp/fatframework/debug/iosSimulator/ComposeApp.framework; sourceTree = "<group>"; };
+		190722DD2EAB6D8600E71753 /* composeApp.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = composeApp.xcframework; path = ../composeApp/build/XCFrameworks/debug/composeApp.xcframework; sourceTree = "<group>"; };
+		199E1FFE2EAB4595007920BF /* ComposeApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposeApp.framework; path = "../composeApp/build/XCFrameworks/debug/composeApp.xcframework/ios-arm64_x86_64-simulator/ComposeApp.framework"; sourceTree = "<group>"; };
+		19E4C0AB2EAB40540026208D /* ComposeApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposeApp.framework; path = "../composeApp/build/XCFrameworks/debug/composeApp.xcframework/ios-arm64/ComposeApp.framework"; sourceTree = "<group>"; };
+		A93A953729CC810C00F8E227 /* LokiDog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LokiDog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A93A953A29CC810C00F8E227 /* iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp.swift; sourceTree = "<group>"; };
 		A93A953E29CC810D00F8E227 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A93A954129CC810D00F8E227 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -24,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				195E65F62EAF493500D378F3 /* ComposeApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,6 +89,10 @@
 		C4127409AE3703430489E7BC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				190722DD2EAB6D8600E71753 /* composeApp.xcframework */,
+				190722D62EAB5AB700E71753 /* ComposeApp.framework */,
+				199E1FFE2EAB4595007920BF /* ComposeApp.framework */,
+				19E4C0AB2EAB40540026208D /* ComposeApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -83,6 +108,7 @@
 				A93A953329CC810C00F8E227 /* Sources */,
 				A93A953429CC810C00F8E227 /* Frameworks */,
 				A93A953529CC810C00F8E227 /* Resources */,
+				195E65F82EAF493500D378F3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -291,6 +317,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
+				DEVELOPMENT_TEAM = 38322ND7C2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -301,7 +328,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.loki.dog.iosApp;
-				PRODUCT_NAME = "LokiDog";
+				PRODUCT_NAME = LokiDog;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -316,6 +343,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
+				DEVELOPMENT_TEAM = 38322ND7C2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -326,7 +354,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.loki.dog.iosApp;
-				PRODUCT_NAME = "LokiDog";
+				PRODUCT_NAME = LokiDog;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

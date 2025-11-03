@@ -1,5 +1,6 @@
 package dev.loki.dog.feature.main
 
+import dev.loki.alarmgroup.model.AlarmMainSort
 import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.feature.base.BaseSharedViewModel
 
@@ -9,8 +10,8 @@ class AlarmMainViewModel(
     factory = factory
 ) {
 
-    init {
-
+    fun updateSort(sort: AlarmMainSort) {
+        dispatch(AlarmMainAction.SortChange(sort))
     }
 
     fun addAlarmGroup(alarmGroup: AlarmGroupModel) {
@@ -27,5 +28,9 @@ class AlarmMainViewModel(
 
     fun deleteSelectedAlarmGroups(alarmGroups: List<AlarmGroupModel>) {
         dispatch(AlarmMainAction.DeleteSelected(alarmGroups))
+    }
+
+    fun showSortBottomSheet(sort: AlarmMainSort) {
+        dispatch(AlarmMainAction.SortChange(sort))
     }
 }

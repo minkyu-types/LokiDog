@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
-        android:icon="@mipmap/ic_launcher"
+        android:name=".MainApplication"
+        android:icon="@mipmap/ic_logo_round"
         android:label="LokiDog"
-        android:theme="@android:style/Theme.Material.NoActionBar">
+        android:attributionTags="alarm"
+        android:theme="@android:style/Theme.Material.NoActionBar"
+        tools:targetApi="31">
         <activity
             android:name=".AppActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
@@ -16,6 +28,29 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".AlarmActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:exported="false" />
+
+        <service
+            android:name=".expect.AlarmService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="shortService" />
+
+        <receiver
+            android:name=".expect.AlarmReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

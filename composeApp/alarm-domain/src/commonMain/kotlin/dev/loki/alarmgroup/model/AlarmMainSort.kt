@@ -4,4 +4,6 @@ enum class AlarmMainSort {
     MOST_RECENT_CREATED,
     MOST_RECENT_UPDATED,
     ACTIVATED_FIRST,
+    ALPHABETICAL,
+    CUSTOM
 }

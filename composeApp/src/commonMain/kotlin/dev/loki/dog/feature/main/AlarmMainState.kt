@@ -9,5 +9,6 @@ data class AlarmMainState(
     override val loadState: LoadState = LoadState.Idle,
     val morningAlarmGroupList: List<AlarmGroupModel> = emptyList(),
     val alarmGroupList: List<AlarmGroupModel> = emptyList(),
-    val sort: AlarmMainSort = AlarmMainSort.ACTIVATED_FIRST,
+    val tempAlarmSize: Int = 0,
+    val sort: AlarmMainSort = AlarmMainSort.MOST_RECENT_CREATED,
 ): BaseState

@@ -1,6 +1,31 @@
 <resources>
-    <string name="open_github">Open github</string>
-    <string name="run">Run</string>
-    <string name="stop">Stop</string>
-    <string name="theme">Theme</string>
+    <string name="start">시작</string>
+    <string name="resume">재개</string>
+    <string name="pause">중지</string>
+    <string name="cancel">취소</string>
+    <string name="recent_timer_history">최근 항목</string>
+
+    <string name="memo">메모</string>
+    <string name="confirm">확인</string>
+    <string name="save">저장</string>
+    <string name="save_temp">임시 보관함</string>
+    <string name="alarms">알람 %1$d개</string>
+    <string name="alarms_max_description">최대 %1$d개까지 추가할 수 있습니다.</string>
+    <string name="alarms_min_repeat_days">최소 1개의 반복 요일을 선택해주세요.</string>
+
+    <string name="bottom_bar_alarm_group_list">알람 그룹</string>
+    <string name="bottom_bar_alarm_timer">타이머</string>
+
+    <string name="screen_main_alarm_group_empty">알람 그룹 생성하기</string>
+    <string name="screen_sub_alarm_group_add">알람 그룹 추가</string>
+    <string name="screen_sub_alarm_group_list_temp">임시 저장 알람 그룹 목록</string>
+
+    <string name="title_alarm_group_temp">임시 보관함</string>
+
+    <string name="sort_title">정렬</string>
+    <string name="sort_most_recent_created">최신 등록순</string>
+    <string name="sort_most_recent_updated">최신 업데이트순</string>
+    <string name="sort_activated_first">활성화순</string>
+    <string name="sort_alphabetical">알파벳순</string>
+    <string name="sort_custom">커스텀</string>
 </resources>
