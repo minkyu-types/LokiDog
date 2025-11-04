@@ -2,6 +2,7 @@ import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -12,6 +13,7 @@ plugins {
     alias(libs.plugins.room)
     alias(libs.plugins.ksp)
     alias(libs.plugins.buildConfig)
+    alias(libs.plugins.google.services)
 }
 
 kotlin {
@@ -41,7 +43,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":composeApp:alarm-domain"))
-
             api(libs.lifecycle.viewmodel)
             implementation(compose.runtime)
             implementation(compose.ui)
@@ -90,6 +91,12 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.androidx.paging3.runtime)
             implementation(libs.androidx.lifecycle.runtime)
+            implementation(libs.google.identity)
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play.services)
+            // Firebase removed - not using Firebase
+            // implementation(project.dependencies.platform(libs.firebase.bom))
+            // implementation(libs.firebase.analytics)
         }
 
         iosMain.dependencies {
@@ -110,7 +117,7 @@ android {
         minSdk = 29
         targetSdk = 36
 
-        applicationId = "dev.loki.dog.androidApp"
+        applicationId = "dev.loki.dog"
         versionCode = 1
         versionName = "1.0.0"
 
@@ -126,8 +133,16 @@ dependencies {
 }
 
 buildConfig {
-    // BuildConfig configuration here.
     // https://github.com/gmazzo/gradle-buildconfig-plugin#usage-in-kts
+
+    val properties = Properties()
+    val localPropertiesFile = project.rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.inputStream())
+    }
+    val googleWebClientId = properties.getProperty("google.web.client.id") ?: ""
+
+    buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleWebClientId\"")
 }
 
 room {

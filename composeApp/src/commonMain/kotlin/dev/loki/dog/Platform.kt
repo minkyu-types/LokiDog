@@ -9,6 +9,7 @@ import org.koin.core.module.Module
 expect fun getAlarmDatabaseModule(): Module
 expect fun getRepositoryModule(): List<Module>
 expect fun getAlarmScheduler(): Module
+expect fun getLoginManagerModule(): Module
 
 fun getAppModules() = listOf(
     mapperModule,
@@ -16,5 +17,6 @@ fun getAppModules() = listOf(
     storeFactoryModule,
     alarmUseCaseModule,
     getAlarmDatabaseModule(),
-    getAlarmScheduler()
+    getAlarmScheduler(),
+    getLoginManagerModule()
 ) + getRepositoryModule()

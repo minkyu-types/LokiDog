@@ -31,6 +31,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":composeApp:alarm-domain"))
+                implementation(libs.multiplatformSettings)
                 implementation(libs.koin.core)
                 implementation(libs.koin.annotations)
                 implementation(libs.androidx.room.paging)

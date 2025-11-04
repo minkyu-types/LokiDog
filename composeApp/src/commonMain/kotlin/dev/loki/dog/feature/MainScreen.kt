@@ -53,6 +53,7 @@ import androidx.navigation.navArgument
 import androidx.savedstate.read
 import dev.loki.dog.feature.addalarmgroup.AddAlarmGroupScreen
 import dev.loki.dog.feature.addalarmgroup.TempAlarmTimeGenerator
+import dev.loki.dog.feature.login.LoginViewModel
 import dev.loki.dog.feature.main.AlarmMainScreen
 import dev.loki.dog.feature.main.AlarmMainViewModel
 import dev.loki.dog.feature.temp.TempAlarmGroupsScreen
@@ -174,6 +175,7 @@ fun MainScreen(
                     route = MainScreen.ALARM.name
                 ) {
                     val viewModel = getKoin().get<AlarmMainViewModel>()
+                    val loginViewModel = getKoin().get<LoginViewModel>()
                     AlarmMainScreen(
                         isSelectionMode = isSelectionMode,
                         selectAll = selectAll,
