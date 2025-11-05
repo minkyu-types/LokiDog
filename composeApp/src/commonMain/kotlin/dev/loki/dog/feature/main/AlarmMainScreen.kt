@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -150,29 +151,40 @@ fun AlarmMainScreen(
     var dragOffsetY by remember { mutableStateOf(0f) }
 
     if (alarmGroups.isEmpty()) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    focusManager.clearFocus()
+        Column {
+            AlarmGroupTopBar(
+                currentSort = state.sort,
+                onClick = {
+                    viewModel.showSortBottomSheet(state.sort)
+                },
+                onSettingClick = {
+
                 }
-        ) {
-            TextButton(
-                onClick = onAddAlarmGroupClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = OnPrimaryContainerLight
-                )
+            )
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        focusManager.clearFocus()
+                    }
             ) {
-                Text(
-                    text = stringResource(Res.string.screen_main_alarm_group_empty),
-                    fontSize = 20.sp,
-                    textAlign = TextAlign.Center,
-                    color = OnTertiaryLight
-                )
+                TextButton(
+                    onClick = onAddAlarmGroupClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = OnPrimaryContainerLight
+                    )
+                ) {
+                    Text(
+                        text = stringResource(Res.string.screen_main_alarm_group_empty),
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center,
+                        color = OnTertiaryLight
+                    )
+                }
             }
         }
     } else {

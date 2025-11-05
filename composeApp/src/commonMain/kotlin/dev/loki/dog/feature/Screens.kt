@@ -2,6 +2,10 @@ package dev.loki.dog.feature
 
 sealed interface Screens
 
+enum class AuthScreen: Screens {
+    LOGIN
+}
+
 enum class MainScreen: Screens {
     ALARM,
     TIMER

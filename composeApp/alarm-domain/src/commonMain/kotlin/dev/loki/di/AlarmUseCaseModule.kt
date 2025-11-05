@@ -17,13 +17,17 @@ import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
 import dev.loki.timerhistory.usecase.CreateTimerHistoryUseCase
 import dev.loki.timerhistory.usecase.DeleteTimerHistoryUseCase
 import dev.loki.timerhistory.usecase.GetTimerHistoriesUseCase
+import dev.loki.auth.usecase.GetCurrentUserUseCase
+import dev.loki.auth.usecase.IsUserSignedInUseCase
+import dev.loki.auth.usecase.SignInWithGoogleUseCase
+import dev.loki.auth.usecase.SignOutUseCase
 import org.koin.dsl.module
 
 val alarmUseCaseModule = module {
     single { GetAlarmByIdUseCase(get())}
     single { GetAlarmsByGroupIdUseCase(get()) }
     single { RescheduleAlarmUseCase(get()) }
-    single { UpsertAlarmUseCase(get(), get()) }
+    single { UpsertAlarmUseCase(get()) }
     single { DeleteAlarmUseCase(get(), get()) }
 
     single { GetAlarmGroupByIdUseCase(get()) }
@@ -40,4 +44,9 @@ val alarmUseCaseModule = module {
     single { CreateTimerHistoryUseCase(get()) }
     single { DeleteTimerHistoryUseCase(get()) }
     single { GetTimerHistoriesUseCase(get()) }
+
+    single { SignInWithGoogleUseCase(get()) }
+    single { SignOutUseCase(get()) }
+    single { GetCurrentUserUseCase(get()) }
+    single { IsUserSignedInUseCase(get()) }
 }

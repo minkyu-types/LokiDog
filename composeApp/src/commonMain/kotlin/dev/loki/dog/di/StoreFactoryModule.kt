@@ -1,6 +1,7 @@
 package dev.loki.dog.di
 
 import dev.loki.dog.feature.addalarmgroup.AddAlarmGroupStoreFactory
+import dev.loki.dog.feature.login.LoginStoreFactory
 import dev.loki.dog.feature.main.AlarmMainStoreFactory
 import dev.loki.dog.feature.temp.TempAlarmGroupsStoreFactory
 import dev.loki.dog.feature.timer.TimerStoreFactory
@@ -11,4 +12,5 @@ val storeFactoryModule = module {
     single<TempAlarmGroupsStoreFactory> { TempAlarmGroupsStoreFactory() }
     single<AddAlarmGroupStoreFactory> { AddAlarmGroupStoreFactory() }
     single<TimerStoreFactory> { TimerStoreFactory() }
+    single<LoginStoreFactory> { LoginStoreFactory() }
 }
