@@ -19,6 +19,7 @@ import dev.loki.timerhistory.usecase.DeleteTimerHistoryUseCase
 import dev.loki.timerhistory.usecase.GetTimerHistoriesUseCase
 import dev.loki.auth.usecase.GetCurrentUserUseCase
 import dev.loki.auth.usecase.IsUserSignedInUseCase
+import dev.loki.auth.usecase.SignInWithAppleUseCase
 import dev.loki.auth.usecase.SignInWithGoogleUseCase
 import dev.loki.auth.usecase.SignOutUseCase
 import org.koin.dsl.module
@@ -46,6 +47,7 @@ val alarmUseCaseModule = module {
     single { GetTimerHistoriesUseCase(get()) }
 
     single { SignInWithGoogleUseCase(get()) }
+    single { SignInWithAppleUseCase(get()) }
     single { SignOutUseCase(get()) }
     single { GetCurrentUserUseCase(get()) }
     single { IsUserSignedInUseCase(get()) }

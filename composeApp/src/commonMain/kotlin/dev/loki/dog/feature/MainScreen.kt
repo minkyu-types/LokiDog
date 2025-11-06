@@ -75,7 +75,8 @@ import org.koin.mp.KoinPlatform.getKoin
 
 @Composable
 fun MainScreen(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    onSignOut: () -> Unit = {}
 ) {
     val backstackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backstackEntry?.destination?.route
@@ -203,7 +204,8 @@ fun MainScreen(
                         },
                         onAddAlarmGroupClick = {
                             navController.navigate("${SubScreen.ALARM_GROUP_ADD.name}/${0L}")
-                        }
+                        },
+                        onSignOut = onSignOut
                     )
                 }
 

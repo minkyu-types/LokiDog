@@ -2,6 +2,7 @@ package dev.loki.dog.feature.login
 
 import dev.loki.DomainResult
 import dev.loki.auth.usecase.GetCurrentUserUseCase
+import dev.loki.auth.usecase.SignInWithAppleUseCase
 import dev.loki.auth.usecase.SignInWithGoogleUseCase
 import dev.loki.auth.usecase.SignOutUseCase
 import dev.loki.dog.expect.LoginManager
@@ -23,6 +24,7 @@ class LoginStore(
 ) {
     private val loginManager: LoginManager by inject()
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase by inject()
+    private val signInWithAppleUseCase: SignInWithAppleUseCase by inject()
     private val signOutUseCase: SignOutUseCase by inject()
     private val getCurrentUserUseCase: GetCurrentUserUseCase by inject()
 
@@ -109,7 +111,7 @@ class LoginStore(
         loginManager.requestAppleLogin(
             onSuccess = { idToken ->
                 viewModelScope.launch {
-                    signInWithGoogleUseCase(idToken).collect { result ->
+                    signInWithAppleUseCase(idToken).collect { result ->
                         when (result) {
                             is DomainResult.Success -> {
                                 setState {

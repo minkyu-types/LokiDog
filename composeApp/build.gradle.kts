@@ -94,9 +94,8 @@ kotlin {
             implementation(libs.google.identity)
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.play.services)
-            // Firebase removed - not using Firebase
-            // implementation(project.dependencies.platform(libs.firebase.bom))
-            // implementation(libs.firebase.analytics)
+            implementation(libs.androidx.browser)
+            implementation(libs.lottie.compose)
         }
 
         iosMain.dependencies {

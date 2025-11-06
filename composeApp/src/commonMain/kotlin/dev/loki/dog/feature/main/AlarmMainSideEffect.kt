@@ -5,4 +5,5 @@ import dev.loki.dog.feature.base.BaseSideEffect
 
 sealed class AlarmMainSideEffect: BaseSideEffect {
     data class ShowSortBottomSheet(val sort: AlarmMainSort): AlarmMainSideEffect()
+    data object MoveToLoginScreen: AlarmMainSideEffect()
 }

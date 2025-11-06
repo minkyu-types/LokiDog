@@ -33,4 +33,8 @@ class AlarmMainViewModel(
     fun showSortBottomSheet(sort: AlarmMainSort) {
         dispatch(AlarmMainAction.SortChange(sort))
     }
+
+    fun signOut() {
+        dispatch(AlarmMainAction.SignOut)
+    }
 }
