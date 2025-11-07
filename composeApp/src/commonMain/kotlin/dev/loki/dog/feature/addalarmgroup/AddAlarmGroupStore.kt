@@ -64,7 +64,8 @@ class AddAlarmGroupStore(
                         // 신규 또는 임시 그룹 -> insert
                         val group = saveAlarmGroup(action.alarmGroup)
                         action.alarms.forEach {
-                            upsertAlarm(action.alarmGroup, it.copy(groupId = group.id))
+                            // 새 알람을 추가할 때는 id를 0으로 설정하여 Room이 자동 생성하도록 함
+                            upsertAlarm(action.alarmGroup, it.copy(id = 0L, groupId = group.id))
                         }
                     } else {
                         // 기존 그룹 -> update
@@ -78,7 +79,8 @@ class AddAlarmGroupStore(
                     val group = saveTempAlarmGroup(action.alarmGroup)
                     action.alarms.forEach {
                         val alarm = alarmMapper.mapToDomain(it)
-                        upsertAlarmUseCase(alarm.copy(groupId = group.id))
+                        // 새 알람을 추가할 때는 id를 0으로 설정하여 Room이 자동 생성하도록 함
+                        upsertAlarmUseCase(alarm.copy(id = 0L, groupId = group.id))
                     }
                 }
             }

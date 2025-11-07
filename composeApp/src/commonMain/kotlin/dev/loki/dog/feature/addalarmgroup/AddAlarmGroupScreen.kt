@@ -356,8 +356,9 @@ fun AddAlarmGroupScreen(
 }
 
 private class IdGen {
-    private var next = 1L
-    fun next() = next++
+    // 음수 ID를 사용하여 Room의 auto-generated ID(양수)와 충돌 방지
+    private var next = -1L
+    fun next() = next--
 }
 
 @Composable
@@ -396,7 +397,9 @@ private fun LazyListScope.AlarmItemsSection(
             time[0].toInt() * 60 + time[1].toInt()
         },
         key = { _, alarm ->
-            keyOf(alarm)
+            keyOf(alarm).also {
+                Logger.d { "qqqq KEY: $it" }
+            }
         }
     ) { index, alarm ->
         if (isSelectionMode) {
