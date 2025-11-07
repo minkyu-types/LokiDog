@@ -1,11 +1,13 @@
 package dev.loki.dog.model
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+@Immutable
 data class AlarmGroupModel(
     val order: Int,
     val id: Long,

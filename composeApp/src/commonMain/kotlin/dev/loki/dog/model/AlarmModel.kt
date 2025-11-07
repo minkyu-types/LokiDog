@@ -1,7 +1,9 @@
 package dev.loki.dog.model
 
+import androidx.compose.runtime.Immutable
 import dev.loki.dog.feature.addalarmgroup.TempAlarmTimeGenerator
 
+@Immutable
 data class AlarmModel(
     val id: Long,
     val groupId: Long,
