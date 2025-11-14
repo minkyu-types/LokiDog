@@ -10,4 +10,5 @@ sealed class AlarmMainAction: BaseAction {
     data class Update(val alarmGroup: AlarmGroupModel): AlarmMainAction()
     data class Delete(val alarmGroup: AlarmGroupModel): AlarmMainAction()
     data class DeleteSelected(val alarmGroups: List<AlarmGroupModel>): AlarmMainAction()
+    data object SignOut: AlarmMainAction()
 }

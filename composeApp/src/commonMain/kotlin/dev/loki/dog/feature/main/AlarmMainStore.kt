@@ -2,11 +2,12 @@ package dev.loki.dog.feature.main
 
 import dev.loki.DomainResult
 import dev.loki.alarmgroup.model.AlarmMainSort
-import dev.loki.alarmgroup.usecase.InsertAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.DeleteAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.GetAlarmGroupsUseCase
 import dev.loki.alarmgroup.usecase.GetTempAlarmGroupsUseCase
+import dev.loki.alarmgroup.usecase.InsertAlarmGroupUseCase
 import dev.loki.alarmgroup.usecase.UpdateAlarmGroupUseCase
+import dev.loki.auth.usecase.SignOutUseCase
 import dev.loki.dog.feature.base.BaseAction
 import dev.loki.dog.feature.base.BaseStore
 import dev.loki.dog.feature.base.LoadState
@@ -35,6 +36,7 @@ class AlarmMainStore(
     private val insertAlarmGroupUseCase: InsertAlarmGroupUseCase by inject()
     private val updateAlarmGroupUseCase: UpdateAlarmGroupUseCase by inject()
     private val deleteAlarmGroupUseCase: DeleteAlarmGroupUseCase by inject()
+    private val signOutUseCase: SignOutUseCase by inject()
     private val alarmGroupMapper: AlarmGroupMapper by inject()
 
     private val currentSort = MutableStateFlow(AlarmMainSort.MOST_RECENT_CREATED)
@@ -99,6 +101,7 @@ class AlarmMainStore(
             is AlarmMainAction.Update -> {
                 updateAlarmGroup(action.alarmGroup)
             }
+
             is AlarmMainAction.Delete -> {
                 deleteAlarmGroup(action.alarmGroup)
             }
@@ -118,6 +121,8 @@ class AlarmMainStore(
                 }
                 currentSort.value = action.sort
             }
+
+            is AlarmMainAction.SignOut -> signOut()
         }
     }
 
@@ -155,6 +160,36 @@ class AlarmMainStore(
                 async { deleteAlarmGroupUseCase(group) }
             }
             deferredJobs.awaitAll()
+        }
+    }
+
+    private fun signOut() {
+        viewModelScope.launch {
+            setState { copy(loadState = LoadState.Loading) }
+
+            signOutUseCase().collect { result ->
+                when (result) {
+                    is DomainResult.Success -> {
+                        setState {
+                            copy(
+                                currentUser = null,
+                                loadState = LoadState.Success
+                            )
+                        }
+                        postEffect(AlarmMainSideEffect.MoveToLoginScreen)
+                    }
+
+                    is DomainResult.Error -> {
+                        setState {
+                            copy(
+                                loadState = LoadState.Error(
+                                    result.throwable.message ?: "Sign out failed"
+                                )
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

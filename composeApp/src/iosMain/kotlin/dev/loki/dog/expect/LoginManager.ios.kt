@@ -1,7 +1,6 @@
 package dev.loki.dog.expect
 
 import co.touchlab.kermit.Logger
-import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AuthenticationServices.*
 import platform.Foundation.NSError
 import platform.Foundation.NSString

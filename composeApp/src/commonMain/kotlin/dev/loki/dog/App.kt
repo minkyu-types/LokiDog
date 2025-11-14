@@ -39,7 +39,13 @@ internal fun App(
             }
 
             composable(route = "main") {
-                MainScreen()
+                MainScreen(
+                    onSignOut = {
+                        navController.navigate(AuthScreen.LOGIN.name) {
+                            popUpTo("main") { inclusive = true }
+                        }
+                    }
+                )
             }
         }
 

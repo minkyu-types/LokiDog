@@ -2,6 +2,9 @@ package dev.loki.dog.expect
 
 import LokiDog.composeApp.BuildConfig
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -120,8 +123,27 @@ actual class LoginManager(
         onSuccess: (String) -> Unit,
         onFailure: (String) -> Unit
     ) {
-        // Android does not support Apple Sign-In
-        onFailure("Apple 로그인은 iOS에서만 지원됩니다.")
+        coroutineScope.launch {
+            try {
+                Logger.d("Starting Apple Sign-In request on Android...", tag = TAG)
+
+                // Android에서 Apple Sign-In을 구현하려면 WebView를 사용하거나
+                // 백엔드 서버를 통해 OAuth flow를 진행해야 합니다.
+                // 현재는 간단한 구현으로 제공합니다.
+
+                // TODO: Apple OAuth flow 구현 필요
+                // 1. Apple Developer Console에서 Service ID 생성
+                // 2. Custom Tabs 또는 WebView로 OAuth flow 시작
+                // 3. Redirect URL에서 authorization code 받기
+                // 4. Backend에서 authorization code를 ID token으로 교환
+
+                onFailure("Android에서 Apple 로그인은 아직 구현 중입니다.\n\nApple OAuth flow를 위해 백엔드 서버 설정이 필요합니다.")
+
+            } catch (e: Exception) {
+                Logger.e("Apple Sign-In failed", e, TAG)
+                onFailure("Apple 로그인 중 오류가 발생했습니다: ${e.message}")
+            }
+        }
     }
 
     private suspend fun handleNoCredentialException(

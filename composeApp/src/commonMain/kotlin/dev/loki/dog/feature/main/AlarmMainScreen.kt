@@ -52,6 +52,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.loki.alarmgroup.model.AlarmMainSort
 import dev.loki.dog.component.AlarmGroupSelectionModeItem
 import dev.loki.dog.component.AlarmGroupSwipeToDeleteItem
+import dev.loki.dog.component.AnimatedAiIcon
+import dev.loki.dog.expect.Platform
 import dev.loki.dog.handler.DraggableItem
 import dev.loki.dog.model.AlarmGroupModel
 import dev.loki.dog.theme.ConstraintLight
@@ -84,6 +86,7 @@ fun AlarmMainScreen(
     onSelectedItemsChange: (Set<AlarmGroupModel>) -> Unit,
     onAlarmGroupClick: (AlarmGroupModel) -> Unit,
     onAddAlarmGroupClick: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -129,6 +132,10 @@ fun AlarmMainScreen(
                 is AlarmMainSideEffect.ShowSortBottomSheet -> {
                     showSortBottomSheet = true
                 }
+
+                is AlarmMainSideEffect.MoveToLoginScreen -> {
+                    onSignOut()
+                }
             }
         }
     }
@@ -158,7 +165,7 @@ fun AlarmMainScreen(
                     viewModel.showSortBottomSheet(state.sort)
                 },
                 onSettingClick = {
-
+                    viewModel.signOut()
                 }
             )
             Box(
@@ -172,18 +179,34 @@ fun AlarmMainScreen(
                         focusManager.clearFocus()
                     }
             ) {
-                TextButton(
-                    onClick = onAddAlarmGroupClick,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = OnPrimaryContainerLight
-                    )
-                ) {
-                    Text(
-                        text = stringResource(Res.string.screen_main_alarm_group_empty),
-                        fontSize = 20.sp,
-                        textAlign = TextAlign.Center,
-                        color = OnTertiaryLight
-                    )
+                if (Platform.isAndroid) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        AnimatedAiIcon(
+                            isPlaying = true
+                        )
+                        Text(
+                            text = "AI로 알람 그룹 만들기",
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                            color = OnTertiaryLight
+                        )
+                    }
+                } else {
+                    TextButton(
+                        onClick = onAddAlarmGroupClick,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = OnPrimaryContainerLight
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.screen_main_alarm_group_empty),
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
+                            color = OnTertiaryLight
+                        )
+                    }
                 }
             }
         }
@@ -205,7 +228,7 @@ fun AlarmMainScreen(
                         viewModel.showSortBottomSheet(state.sort)
                     },
                     onSettingClick = {
-
+                        viewModel.signOut()
                     }
                 )
             }

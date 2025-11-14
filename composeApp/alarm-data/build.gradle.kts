@@ -54,6 +54,9 @@ kotlin {
                 implementation(libs.androidx.paging3.common)
                 implementation(libs.androidx.paging3.runtime)
                 implementation(libs.androidx.paging3.compose)
+                implementation(project.dependencies.platform(libs.firebase.bom))
+                implementation(libs.firebase.ai)
+                implementation(libs.kotlinx.serialization.json.v163)
             }
         }
 //        val iosMain by creating { dependsOn(commonMain) }

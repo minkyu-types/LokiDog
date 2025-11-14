@@ -16,10 +16,6 @@ class LoginViewModel(
         dispatch(LoginAction.SignInWithApple)
     }
 
-    fun signOut() {
-        dispatch(LoginAction.SignOut)
-    }
-
     fun checkAuthState() {
         dispatch(LoginAction.CheckAuthState)
     }

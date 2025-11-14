@@ -1,6 +1,7 @@
 package dev.loki.alarm_data.di
 
 import dev.loki.alarm.repository.AlarmRepository
+import dev.loki.alarm_data.GeminiManager
 import dev.loki.alarm_data.repository.AlarmGroupRepositoryImpl
 import dev.loki.alarm_data.repository.AlarmRepositoryImpl
 import dev.loki.alarm_data.repository.AuthRepositoryImpl

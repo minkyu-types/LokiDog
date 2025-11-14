@@ -7,7 +7,7 @@ import dev.loki.alarm_data.database.AlarmDatabase
 import dev.loki.alarm_data.database.getAlarmDatabase
 import dev.loki.alarm_data.di.alarmMapperModule
 import dev.loki.alarm_data.di.alarmRepositoryModule
-import dev.loki.alarm_data.expect.getAlarmDatabaseBuilder
+import dev.loki.alarm_data.getAlarmDatabaseBuilder
 import dev.loki.dog.expect.LoginManager
 import dev.loki.dog.expect.PlatformAlarmScheduler
 import org.koin.core.module.Module

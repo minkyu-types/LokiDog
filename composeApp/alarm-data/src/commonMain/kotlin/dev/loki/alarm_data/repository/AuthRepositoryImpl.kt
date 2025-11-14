@@ -39,6 +39,26 @@ class AuthRepositoryImpl(
         }
     }
 
+    override suspend fun signInWithApple(idToken: String): Result<User> {
+        return try {
+            // In a real app, you would verify the token with your backend
+            // For now, we'll just parse the token payload
+            // This is a placeholder - you should implement proper token verification
+            val user = User(
+                id = idToken.hashCode().toString(),
+                email = "",
+                displayName = null,
+                photoUrl = null
+            )
+
+            saveUser(user)
+            _currentUser.value = user
+            Result.success(user)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun signOut(): Result<Unit> {
         return try {
             clearUser()

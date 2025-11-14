@@ -1,18 +1,35 @@
 package dev.loki.dog.feature.login
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import dev.loki.dog.theme.ConstraintLight
-import dev.loki.dog.theme.OnBackgroundLight
+import androidx.compose.ui.unit.sp
+import dev.loki.dog.expect.Platform
 import dev.loki.dog.theme.OnTertiaryLight
+import dev.loki.dog.theme.ScrimLight
 import lokidog.composeapp.generated.resources.Res
-import lokidog.composeapp.generated.resources.android_light_rd_na
+import lokidog.composeapp.generated.resources.apple_logo_white_xxxhdpi_192x192
+import lokidog.composeapp.generated.resources.google_g_logo_xxxhdpi_192x192
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -33,6 +50,7 @@ fun LoginScreen(
                 is LoginSideEffect.ShowError -> {
                     // Handle error display (could use Snackbar)
                 }
+
                 is LoginSideEffect.ShowGoogleSignIn -> {
                     // This is handled by the button click
                 }
@@ -80,70 +98,61 @@ private fun LoginScreenContent(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Google Sign In Button
             Button(
                 onClick = onGoogleSignInClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                enabled = !state.isSigningIn,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = OnTertiaryLight
-                )
+                ),
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                if (state.isSigningIn) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.google_g_logo_xxxhdpi_192x192),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .align(Alignment.CenterStart),
                     )
-                } else {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(Res.drawable.android_light_rd_na),
-                            contentDescription = null,
-                        )
-                        Text(
-                            text = "Google로 로그인",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = OnBackgroundLight
-                        )
-                    }
+                    Text(
+                        text = "Sign in with Google",
+                        fontSize = 18.sp,
+                        color = ScrimLight,
+                        modifier = Modifier
+                            .align(Alignment.Center),
+                    )
                 }
             }
 
-            // Apple Sign In Button
-            IconButton(
-                onClick = onAppleSignInClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                enabled = !state.isSigningIn,
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                )
-            ) {
-                if (state.isSigningIn) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                } else {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+            // Apple Sign-In 버튼은 iOS에서만 표시
+            if (Platform.isIOS) {
+                Button(
+                    onClick = onAppleSignInClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ScrimLight
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Image(
-                            painter = painterResource(Res.drawable.android_light_rd_na),
+                            painter = painterResource(Res.drawable.apple_logo_white_xxxhdpi_192x192),
                             contentDescription = null,
+                            modifier = Modifier
+                                .size(34.dp)
+                                .align(Alignment.CenterStart),
                         )
                         Text(
-                            text = "Apple로 로그인",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = OnBackgroundLight
+                            text = "Sign in with Apple",
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .align(Alignment.Center),
                         )
                     }
                 }
