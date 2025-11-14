@@ -3,6 +3,8 @@ package dev.loki.dog.component
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import com.airbnb.lottie.RenderMode
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -50,5 +52,15 @@ actual fun LottieAnimation(
         composition = composition,
         progress = { progress },
         modifier = modifier
+            // Force software rendering to ensure gradients and effects render correctly
+            .graphicsLayer {
+                // Disable hardware acceleration for better color rendering
+                alpha = 0.99f
+            },
+        // Enable merge paths for better compatibility
+        enableMergePaths = true,
+        // Use SOFTWARE render mode to ensure gradients and blur effects display correctly
+        // HARDWARE mode may cause color/gradient issues on some devices
+        renderMode = RenderMode.SOFTWARE
     )
 }
